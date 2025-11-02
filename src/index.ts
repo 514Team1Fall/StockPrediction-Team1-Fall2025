@@ -8,8 +8,7 @@ import { authRouter } from "./api/routes/auth.js";
 import cors from 'cors';
 
 import cookieParser from "cookie-parser";
-import cors from "cors";
-import {preSeed} from "./db/db_api.js";
+import { preSeed } from "./db/db_api.js";
 dotenv.config();
 
 const app: Express = express();
@@ -25,10 +24,6 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-}));
 
 app.use(TICKER_API_ROUTE, tickerRouter);
 app.use(ARTICLE_API_ROUTE, articleRouter);
