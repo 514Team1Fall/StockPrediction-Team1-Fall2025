@@ -141,7 +141,6 @@ module "ec2" {
   auth_client_id     = module.cognito.client_id
   auth_client_secret = module.cognito.client_secret
   repo_url           = var.repo_url
-  public_dns         = aws_eip.ec2_eip.public_dns
 }
 
 resource "aws_eip_association" "ec2_eip_assoc" {

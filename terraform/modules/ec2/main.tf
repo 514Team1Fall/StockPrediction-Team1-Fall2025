@@ -39,7 +39,6 @@ resource "aws_instance" "stock_ec2" {
     auth_client_id     = var.auth_client_id
     auth_client_secret = var.auth_client_secret
     repo_url           = var.repo_url
-    public_dns         = var.public_dns
   })
 
   tags = {

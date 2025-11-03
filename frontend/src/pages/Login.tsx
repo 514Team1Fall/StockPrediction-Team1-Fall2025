@@ -1,10 +1,9 @@
 import { Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 
 export default function Login() {
-  const backendUrl = (window as Window & typeof globalThis & { BACKEND_URL: string }).BACKEND_URL
   // hmmmm
   function handleLogin() {
-    window.location.href = `${backendUrl}/api/auth/login`;
+    window.location.href = `/api/auth/login`;
   }
 
   return (
