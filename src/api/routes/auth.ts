@@ -103,7 +103,7 @@ authRouter.get("/session", async (req: Request, res: Response) => {
 authRouter.post("/logout", async (req: Request, res: Response) => {
     res.clearCookie(sessionOptions.cookieName);
     // return res.redirect(clientConfig.post_logout_redirect_uri); Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource error so im just returning instead of redirecting
-    return res.status(200).json({success:true });
+    return res.status(200).json({ success: true });
 });
 
 
@@ -127,6 +127,8 @@ async function getAuthorizationCode(
     const currentUrl = new URL(
         `${protocol}://${host}${req.originalUrl}`,
     );
+
+    console.log("Current URL:", currentUrl.toString());
 
     try {
         const tokenSet = await client.authorizationCodeGrant(
