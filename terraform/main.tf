@@ -42,7 +42,7 @@ module "s3" {
   source      = "./modules/s3"
   api_url     = "https://${aws_eip.ec2_eip.public_dns}"
   bucket_name = "swen-514-stock-predictor-app-${random_id.suffix.hex}"
-  build_dir   = "./frontend"
+  build_dir   = "${path.root}/../frontend"
 }
 
 resource "random_id" "suffix" {
@@ -67,7 +67,7 @@ module "ec2" {
   key_name           = var.key_name
   ec2_sg_id          = module.security.ec2_sg_id
   api_url            = "https://${aws_eip.ec2_eip.public_dns}"
-  app_url            = module.s3.website_url
+  app_url            = "http://${module.s3.website_url}"
   auth_issuer        = module.cognito.issuer
   auth_client_id     = module.cognito.client_id
   auth_client_secret = module.cognito.client_secret
@@ -85,6 +85,10 @@ resource "aws_eip_association" "ec2_eip_assoc" {
 # Outputs the public IP of the EC2 instance and the RDS endpoint.
 output "api_url" {
   value = "http://${aws_eip.ec2_eip.public_dns}"
+}
+
+output "app_url" {
+  value = "http://${module.s3.website_url}"
 }
 
 

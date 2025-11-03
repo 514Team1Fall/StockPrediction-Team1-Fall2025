@@ -21,6 +21,7 @@ const AUTH_API_ROUTE = '/api/auth';
 
 app.use(cors({
     origin: process.env.APP_URL || 'http://localhost:5000',
+    credentials: true,
 }));
 app.use(express.json());
 app.use(cookieParser());

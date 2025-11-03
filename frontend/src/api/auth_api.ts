@@ -1,6 +1,6 @@
 import type { User } from "../../../src/db/schema";
 
-const BACKEND_URL = `${import.meta.env.VITE_BACKEND_URL}`;
+const BACKEND_URL = (window as Window & typeof globalThis & { BACKEND_URL: string }).BACKEND_URL
 
 export async function checkSession(): Promise<User | null> {
     try {

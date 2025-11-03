@@ -35,6 +35,7 @@ resource "aws_instance" "stock_ec2" {
     db_name            = var.db_name
     db_endpoint        = var.db_endpoint
     app_url            = var.app_url
+    api_url            = var.api_url
     auth_issuer        = var.auth_issuer
     auth_client_id     = var.auth_client_id
     auth_client_secret = var.auth_client_secret

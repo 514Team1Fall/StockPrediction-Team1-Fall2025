@@ -1,6 +1,7 @@
 import type { NewsArticle } from "../../../src/db/schema";
 
-const BACKEND_URL = `${import.meta.env.VITE_BACKEND_URL}`;
+const BACKEND_URL = (window as Window & typeof globalThis & { BACKEND_URL: string }).BACKEND_URL
+
 // const TICKER_API_ROUTE = '/api/tickers';
 const ARTICLE_API_ROUTE = '/api/articles';
 // const USER_API_ROUTE = '/api/users';

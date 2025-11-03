@@ -16,6 +16,14 @@ resource "aws_s3_bucket_website_configuration" "frontend_website" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "frontend" {
+  bucket                  = aws_s3_bucket.frontend.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 # --- Public read policy (read-only objects) ---
 resource "aws_s3_bucket_policy" "public_read" {
   bucket = aws_s3_bucket.frontend.id
@@ -32,21 +40,10 @@ resource "aws_s3_bucket_policy" "public_read" {
       }
     ]
   })
+
+  depends_on = [aws_s3_bucket_public_access_block.frontend]
 }
 
-# --- Build frontend ---
-resource "null_resource" "build_frontend" {
-  triggers = {
-    api_url = var.api_url
-  }
-
-  provisioner "local-exec" {
-    working_dir = var.build_dir
-    command     = "npm ci && VITE_API_URL=${var.api_url} npm run build"
-  }
-
-  depends_on = [local_file.vite_env]
-}
 
 # --- Upload build artifacts ---
 resource "aws_s3_object" "site_files" {
@@ -55,6 +52,27 @@ resource "aws_s3_object" "site_files" {
   key      = each.value
   source   = "${var.build_dir}/dist/${each.value}"
   etag     = filemd5("${var.build_dir}/dist/${each.value}")
+  content_type = lookup({
+    html = "text/html"
+    css  = "text/css"
+    js   = "application/javascript"
+    png  = "image/png"
+    jpg  = "image/jpeg"
+    jpeg = "image/jpeg"
+    gif  = "image/gif"
+    svg  = "image/svg+xml"
+    ico  = "image/x-icon"
+    json = "application/json"
+    txt  = "text/plain"
+  }, split(".", each.value)[length(split(".", each.value)) - 1], "application/octet-stream")
 
-  depends_on = [null_resource.build_frontend]
+}
+
+resource "aws_s3_object" "config_js" {
+  bucket = aws_s3_bucket.frontend.id
+  key    = "config.js"
+  content = templatefile("${path.root}/config.js.tpl", {
+    api_url = var.api_url
+  })
+  content_type = "application/javascript"
 }
