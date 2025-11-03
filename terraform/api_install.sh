@@ -13,13 +13,25 @@ export AUTH_CLIENT_SECRET=${auth_client_secret}
 export PORT=5000
 
 yum update -y
-yum install -y git nginx curl-minimal openssl
+yum install -y certbot
+
+certbot certonly \
+  --standalone \
+  --agree-tos \
+  --register-unsafely-without-email \
+  --non-interactive \
+  -d "${public_dns}"
+
+yum install -y git nginx curl-minimal
 curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
 sudo yum install -y nodejs
 mkdir -p /opt/api
 git clone -b frontend ${repo_url} /opt/api
 cd /opt/api
-openssl req -nodes -new -x509 -keyout server.key -out server.cert -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=${public_dns}" -days 3650
+
+cp /etc/letsencrypt/live/${public_dns}/fullchain.pem /opt/api/server.cert
+cp /etc/letsencrypt/live/${public_dns}/privkey.pem /opt/api/server.key
+
 npm install
 npm run build
 DATABASE_URL="mysql://${db_username}:${db_password}@${db_endpoint}/${db_name}" npm exec drizzle-kit push
