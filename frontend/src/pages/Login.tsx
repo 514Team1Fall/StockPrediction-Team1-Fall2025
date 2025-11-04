@@ -11,8 +11,8 @@ export default function Login() {
       direction="column"
       align="center"
       justify="center"
-      minHeight="100vh"
-      width="100vw"
+      width="100%"
+      height="100%"
       bg="gray.100"
     >
       <VStack gap="1.2rem">

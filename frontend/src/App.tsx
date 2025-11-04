@@ -9,7 +9,13 @@ import Watchlist from "./pages/Watchlist";
 import News from "./pages/News";
 import NewsArticle from "./pages/NewsArticle";
 import Analytics from "./pages/Analytics";
-import { Spinner, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Spinner,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -44,25 +50,31 @@ function App() {
 
   return (
     <>
-      {/* conditionally renders display based on user logged in status*/}
-
-      <Navbar user={user} handleLogout={handleLogout} />
-      <Routes>
-        <Route element={<PrivateRoutes user={user} />}>
-          {/* routes for logged-in users */}
-          <Route path="/news" element={<News />} />
-          <Route path="/watchlist" element={<Watchlist user={user} />} />
-          <Route path="/news/:id" element={<NewsArticle />} />
-          <Route path="/analytics" element={<Analytics />} />
-        </Route>
-        {/* route for nonlogged-in users */}
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/news" /> : <Login />}
-        />
-        {/* route for nonlogged-in users */}
-        <Route path="*" element={<Navigate to={user ? "/news" : "/login"} />} />
-      </Routes>
+      <Flex direction="column" height="100vh">
+        <Navbar user={user} handleLogout={handleLogout} />
+        <Box flexGrow={1} width="100%">
+          <Routes>
+            {/* conditionally renders display based on user logged in status*/}
+            <Route element={<PrivateRoutes user={user} />}>
+              {/* routes for logged-in users */}
+              <Route path="/news" element={<News />} />
+              <Route path="/watchlist" element={<Watchlist user={user} />} />
+              <Route path="/news/:id" element={<NewsArticle />} />
+              <Route path="/analytics" element={<Analytics />} />
+            </Route>
+            {/* route for nonlogged-in users */}
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/news" /> : <Login />}
+            />
+            {/* route for nonlogged-in users */}
+            <Route
+              path="*"
+              element={<Navigate to={user ? "/news" : "/login"} />}
+            />
+          </Routes>
+        </Box>
+      </Flex>
     </>
   );
 }
