@@ -452,6 +452,8 @@ export async function getAllArticlesWithTickerSentiments(tickerSymbol?: string |
                 title: newsArticles.title,
                 summary: newsArticles.summary,
                 publishedAt: newsArticles.publishedAt,
+                overallSentimentScore: newsArticles.overallSentimentScore,
+                overallSentimentLabel: newsArticles.overallSentimentLabel,
             })
             .from(newsArticles)
             .orderBy(newsArticles.publishedAt);
