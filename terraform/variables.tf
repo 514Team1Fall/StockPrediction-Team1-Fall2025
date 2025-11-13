@@ -26,3 +26,9 @@ variable "repo_url" {
   description = "Git repository URL for the application code"
   type        = string
 }
+
+variable "alphavantage_api_key" {
+  description = "Alpha Vantage API key"
+  type        = string
+  sensitive   = true
+}

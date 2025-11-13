@@ -144,6 +144,15 @@ module "ec2" {
   repo_url           = var.repo_url
 }
 
+module "lambda_news" {
+  source                 = "./modules/lambda_news"
+  function_name          = "news-ingestor"
+  api_base_url           = "https://${aws_cloudfront_distribution.cdn.domain_name}/api"
+  alphavantage_api_key   = var.alphavantage_api_key
+  source_dir             = "${path.root}/../lambda/news_ingestor"
+  schedule_expression    = "rate(1 hour)"
+}
+
 resource "aws_eip_association" "ec2_eip_assoc" {
   instance_id   = module.ec2.instance_id
   allocation_id = aws_eip.ec2_eip.id
