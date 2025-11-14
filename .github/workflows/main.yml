@@ -39,9 +39,10 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          # File containing the version Spec of the version to use.  Examples: package.json, .nvmrc, .node-version, .tool-versions.
-          # If node-version and node-version-file are both provided the action will use version from node-version. 
-          node-version-file: 'frontend/package.json'
+            # Version Spec of the version to use in SemVer notation.
+            # It also admits such aliases as lts/*, latest, nightly and canary builds
+            # Examples: 12.x, 10.15.1, >=10.15.0, lts/Hydrogen, 16-nightly, latest, node
+            node-version: '22.x'
       - run: cd api && npm install && cd .. # install dependencies (interfereing w frontend build)
       - run: cd frontend && npm install && npm run build && cd ..
       
@@ -59,7 +60,13 @@ jobs:
       # Step 5: Preview the infrastructure changes
       - name: Terraform Plan
         run: cd terraform && terraform plan
-
+        env:
+          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+          TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
+          TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
       # Step 6: Apply the infrastructure changes
       - name: Terraform Apply
         run: cd terraform && terraform apply -auto-approve # Auto-approve flag skips manual confirmation
@@ -69,6 +76,7 @@ jobs:
           TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
           
   terraform_destroy:
     name: "Terraform_destroy"
@@ -106,7 +114,13 @@ jobs:
       # Step 5: Preview the infrastructure changes
       - name: Terraform Plan
         run: cd terraform && terraform plan
-
+        env:
+          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+          TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
+          TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
       # Step 6: destroy the infrastructure changes
       - name: Terraform Destory
         run: cd terraform && terraform destroy -auto-approve # Auto-approve flag skips manual confirmation
@@ -116,3 +130,4 @@ jobs:
           TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
