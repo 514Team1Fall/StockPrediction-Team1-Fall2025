@@ -37,11 +37,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # Secret variable
           aws-region: ${{ vars.AWS_REGION }}  # Reference the repository variable
 
-      # build the project
-      - name: Build Project
-        uses: linchpin/action-build-yarn-npm@master
-        env:
-          working_directory: "frontend"
+      - uses: actions/setup-node@v6
+        with:
+          # File containing the version Spec of the version to use.  Examples: package.json, .nvmrc, .node-version, .tool-versions.
+          # If node-version and node-version-file are both provided the action will use version from node-version. 
+          node-version-file: 'frontend/package.json'
+      - run: cd frontend 
+      - run: npm install
+      - run: npm run build
+      - run: cd ..
       
       # Step 3: Install Terraform
       - name: Setup Terraform
