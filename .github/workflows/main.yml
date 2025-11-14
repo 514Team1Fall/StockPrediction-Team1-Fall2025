@@ -52,20 +52,17 @@ jobs:
           terraform_version: 1.1.9 # Specifies Terraform version to use
           terraform_wrapper: false
       
-      - name: Change into terraform dir for remaining steps
-        run: cd terraform
-      
       # Step 4: Initialize Terraform working directory
       - name: Terraform Init
-        run: terraform init
+        run: cd terraform && terraform init
 
       # Step 5: Preview the infrastructure changes
       - name: Terraform Plan
-        run: terraform plan
+        run: cd terraform && terraform plan
 
       # Step 6: Apply the infrastructure changes
       - name: Terraform Apply
-        run: terraform apply -auto-approve # Auto-approve flag skips manual confirmation
+        run: cd terraform && terraform apply -auto-approve # Auto-approve flag skips manual confirmation
         env:
           TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
@@ -101,22 +98,18 @@ jobs:
         with:
           terraform_version: 1.1.9 # Specifies Terraform version to use
           terraform_wrapper: false
-      
-      # cd into terraform dir
-      - name: Change into terraform dir for remaining steps
-        run: cd terraform   
-      
+    
       # Step 4: Initialize Terraform working directory
       - name: Terraform Init
-        run: terraform init
+        run: cd terraform && terraform init
 
       # Step 5: Preview the infrastructure changes
       - name: Terraform Plan
-        run: terraform plan
+        run: cd terraform && terraform plan
 
       # Step 6: destroy the infrastructure changes
       - name: Terraform Destory
-        run: terraform destroy -auto-approve # Auto-approve flag skips manual confirmation
+        run: cd terraform && terraform destroy -auto-approve # Auto-approve flag skips manual confirmation
         env:
           TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
