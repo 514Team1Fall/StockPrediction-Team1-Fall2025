@@ -42,6 +42,7 @@ jobs:
           # File containing the version Spec of the version to use.  Examples: package.json, .nvmrc, .node-version, .tool-versions.
           # If node-version and node-version-file are both provided the action will use version from node-version. 
           node-version-file: 'frontend/package.json'
+      - run: cd api && npm install && cd .. # install dependencies (interfereing w frontend build)
       - run: cd frontend && npm install && npm run build && cd ..
       
       # Step 3: Install Terraform
