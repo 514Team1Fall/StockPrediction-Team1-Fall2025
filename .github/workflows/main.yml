@@ -65,7 +65,7 @@ jobs:
           TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
-      
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
       # Step 6: Apply the infrastructure changes
       - name: Terraform Apply
         run: cd terraform && terraform apply -auto-approve # Auto-approve flag skips manual confirmation
@@ -75,6 +75,7 @@ jobs:
           TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
           
   terraform_destroy:
     name: "Terraform_destroy"
@@ -118,7 +119,7 @@ jobs:
           TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
-
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
       # Step 6: destroy the infrastructure changes
       - name: Terraform Destory
         run: cd terraform && terraform destroy -auto-approve # Auto-approve flag skips manual confirmation
@@ -128,3 +129,4 @@ jobs:
           TF_VAR_key_name: ${{ secrets.AWS_KEY_NAME }} # Key pair name
           TF_VAR_db_name: ${{ secrets.DB_NAME }}
           TF_VAR_repo_url: "https://github.com/fxlso/StockPrediction-Team1-Fall2025.git"
+          TF_VAR_alphavantage_api_key: ${{ secrets.ALPHAVANTAGE_API_KEY }}
