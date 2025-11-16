@@ -59,7 +59,7 @@ function App() {
               {/* routes for logged-in users */}
               <Route path="/news" element={<News />} />
               <Route path="/watchlist" element={<Watchlist user={user} />} />
-              <Route path="/news/:id" element={<NewsArticle />} />
+              <Route path="/news/:articleId" element={<NewsArticle />} />
               <Route path="/analytics" element={<Analytics />} />
             </Route>
             {/* route for nonlogged-in users */}

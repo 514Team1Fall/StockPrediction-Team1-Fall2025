@@ -1,8 +1,9 @@
+import { API_URL } from "@/assets/config";
 import type { User } from "../../../api/src/db/schema";
 
 export async function checkSession(): Promise<User | null> {
     try {
-        const res = await fetch(`/api/auth/session`, {
+        const res = await fetch(`${API_URL}/api/auth/session`, {
             credentials: "include",
         });
         console.log('res data: ', res)
@@ -20,8 +21,9 @@ export async function checkSession(): Promise<User | null> {
     }
 }
 
+
 export async function logout(): Promise<void> {
-    await fetch(`/api/auth/logout`, {
+    await fetch(`${API_URL}/api/auth/logout`, {
         credentials: "include",
         method: "POST"
     });
