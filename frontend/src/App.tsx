@@ -9,7 +9,13 @@ import Watchlist from "./pages/Watchlist";
 import News from "./pages/News";
 import NewsArticle from "./pages/NewsArticle";
 import Analytics from "./pages/Analytics";
-import { Spinner, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Spinner,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -21,16 +27,30 @@ function App() {
 
   // TODO: maybe call this every 5 minutes? just so it automatically logs us out when we're not active as default logout time in cognito is 3mins
   async function verifyLogin() {
-    const isUser = await checkSession();
-    console.log("user @verifyLogin():", isUser);
-    setUser(isUser);
-    setLoading(false);
+    try{
+      const isUser = await checkSession();
+      console.log("user @verifyLogin():", isUser);
+      setUser(isUser);
+      setLoading(false);
+    }
+    catch (err){
+      console.error("user session issue: ", err)
+      setUser(null);
+    }
+    finally {
+      setLoading(false);
+    }
   }
 
   async function handleLogout() {
-    await logout();
-    console.log("user logged out?:", user);
-    setUser(null);
+    try {
+      await logout();
+      console.log("user logged out");
+      setUser(null);
+    } catch (err) {
+      console.error("logout failure:", err);
+      setUser(null)
+    }
   }
 
   if (loading) {
@@ -44,25 +64,31 @@ function App() {
 
   return (
     <>
-      {/* conditionally renders display based on user logged in status*/}
-
-      <Navbar user={user} handleLogout={handleLogout} />
-      <Routes>
-        <Route element={<PrivateRoutes user={user} />}>
-          {/* routes for logged-in users */}
-          <Route path="/news" element={<News />} />
-          <Route path="/watchlist" element={<Watchlist user={user} />} />
-          <Route path="/news/:id" element={<NewsArticle />} />
-          <Route path="/analytics" element={<Analytics />} />
-        </Route>
-        {/* route for nonlogged-in users */}
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/news" /> : <Login />}
-        />
-        {/* route for nonlogged-in users */}
-        <Route path="*" element={<Navigate to={user ? "/news" : "/login"} />} />
-      </Routes>
+      <Flex direction="column" height="100vh">
+        <Navbar user={user} handleLogout={handleLogout} />
+        <Box flexGrow={1} width="100%">
+          <Routes>
+            {/* conditionally renders display based on user logged in status*/}
+            <Route element={<PrivateRoutes user={user} />}>
+              {/* routes for logged-in users */}
+              <Route path="/news" element={<News />} />
+              <Route path="/watchlist" element={<Watchlist user={user} />} />
+              <Route path="/news/:articleId" element={<NewsArticle />} />
+              <Route path="/analytics" element={<Analytics />} />
+            </Route>
+            {/* route for nonlogged-in users */}
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/news" /> : <Login />}
+            />
+            {/* route for nonlogged-in users */}
+            <Route
+              path="*"
+              element={<Navigate to={user ? "/news" : "/login"} />}
+            />
+          </Routes>
+        </Box>
+      </Flex>
     </>
   );
 }
