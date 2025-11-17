@@ -42,7 +42,7 @@ resource "aws_instance" "stock_ec2" {
   })
 
   tags = {
-    Name = "WordPress EC2 Instance"
+    Name = "StockPredictor-EC2"
   }
 }
 

@@ -159,7 +159,7 @@ module "lambda_news" {
   api_base_url           = "https://${aws_cloudfront_distribution.cdn.domain_name}/api"
   alphavantage_api_key   = var.alphavantage_api_key
   source_dir             = "${path.root}/../lambda/news_ingestor"
-  schedule_expression    = "rate(5 minutes)"
+  schedule_expression    = "rate(30 minutes)"
 }
 
 resource "aws_eip_association" "ec2_eip_assoc" {
