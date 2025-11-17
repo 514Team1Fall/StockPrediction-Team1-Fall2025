@@ -216,6 +216,7 @@ export async function getUserWatchlistTickers(userId: string): Promise<Ticker[]>
             symbol: tickers.symbol,
             type: tickers.type,
             createdAt: tickers.createdAt,
+            notificationEnabled: userWatchlist.notificationEnabled, //helpful watchlist page
         })
         .from(tickers)
         .innerJoin(
