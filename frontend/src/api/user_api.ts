@@ -7,7 +7,6 @@ export interface WatchlistItem extends UserWatchlist {
     symbol: string,
     type: "stock" | "crypto";
 }
-//TODO: Bru, change to try  catch for components and do this style of error handling for calling api side....
 
 export async function addToUserWatchlist(symbol: string, type?: "stock" | "crypto" ) {
     const response = await fetch(`${API_URL}${USER_API_ROUTE}/watchlist`, {
@@ -19,10 +18,8 @@ export async function addToUserWatchlist(symbol: string, type?: "stock" | "crypt
         })
     });
 
-    if (!response.ok) {
-        const errorRes = await response.json();
-        throw new Error(errorRes.error || "fail to add to watchlist");
-    }
+    if (!response.ok) throw new Error("fail to add to watchlist");
+
     return response.json();
 }
 
@@ -34,10 +31,8 @@ export async function removeFromUserWatchlist(symbol: string) {
         credentials: "include",
     });
 
-    if (!response.ok) {
-        const errorRes = await response.json();
-        throw new Error(errorRes.error || "fail to remove from watchlist");
-    }
+    if (!response.ok) throw new Error("fail to remove from watchlist");
+
     return response.json();
 }
 
@@ -50,18 +45,22 @@ export async function toggledNotifications(symbol: string, enabled: boolean, typ
         credentials: "include",
     });
   
-    if (!response.ok) {
-        const errorRes = await response.json();
-        throw new Error(errorRes.error || "ffailed to toggle notifications");
-    }
+    if (!response.ok) throw new Error("failed to toggle notifications");
+    
     return response.json();
 }
 
+/**
+ * by default we're always marking an adding ticker as enabled so I will handle it as such since it's not included in response
+ * @returns userwatchlist tickers
+ */
 export async function getUserWatchlist() {
     const response = await fetch(`${API_URL}${USER_API_ROUTE}/watchlist`, {
         credentials: "include",
     });
 
     if (!response.ok) throw new Error('failed to get user watchlist');
-    return response.json();
+    const res = response.json();
+    console.log("watchlist: ",res);
+    return res;
 }

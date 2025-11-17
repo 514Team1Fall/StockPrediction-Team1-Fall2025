@@ -27,16 +27,30 @@ function App() {
 
   // TODO: maybe call this every 5 minutes? just so it automatically logs us out when we're not active as default logout time in cognito is 3mins
   async function verifyLogin() {
-    const isUser = await checkSession();
-    console.log("user @verifyLogin():", isUser);
-    setUser(isUser);
-    setLoading(false);
+    try{
+      const isUser = await checkSession();
+      console.log("user @verifyLogin():", isUser);
+      setUser(isUser);
+      setLoading(false);
+    }
+    catch (err){
+      console.error("user session issue: ", err)
+      setUser(null);
+    }
+    finally {
+      setLoading(false);
+    }
   }
 
   async function handleLogout() {
-    await logout();
-    console.log("user logged out?:", user);
-    setUser(null);
+    try {
+      await logout();
+      console.log("user logged out");
+      setUser(null);
+    } catch (err) {
+      console.error("logout failure:", err);
+      setUser(null)
+    }
   }
 
   if (loading) {

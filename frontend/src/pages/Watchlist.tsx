@@ -1,7 +1,8 @@
-import { Container, Heading, Table, Button, Badge, Switch, Text, Spinner } from "@chakra-ui/react";
+import { Container, Heading, Table, Button, Badge, Switch, Text } from "@chakra-ui/react";
 import type { User } from "../../../api/src/db/schema";
 import { useEffect, useState } from "react";
 import { getUserWatchlist, removeFromUserWatchlist, toggledNotifications, type WatchlistItem } from "@/api/user_api";
+import Loading from "./Loading";
 
 type WatchlistProps = {
   user: User | null;
@@ -13,18 +14,15 @@ type WatchlistProps = {
 //   { symbol: "BTC", type: "Crypto", notificationEnabled: true },
 // ];
 
-// TODO: isLoading? slow to respond at times the pages
-// TODO: maintain state between pages for UI
-
 export default function Watchlist({ user }: WatchlistProps) {
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [tickerNotiLoading, setTickerNotiLoading] = useState<number | null>(null);
-
+  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]); // content displayed in watchlist page
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [loadingTickers, setLoadingTickers] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     async function loadUserWatchlist() {
       try {
+        setLoading(true);
         const data = await getUserWatchlist();
         setWatchlist(data);
       } catch (err) {
@@ -36,34 +34,35 @@ export default function Watchlist({ user }: WatchlistProps) {
     loadUserWatchlist();
   }, []);
 
-async function handleToggle(ticker: WatchlistItem) {
-  setTickerNotiLoading(ticker.tickerId)
-  // optimistic uiappraocj
-  setWatchlist(prev =>
-    prev.map(w =>
-      w.tickerId === ticker.tickerId ? { ...w, notificationEnabled: !w.notificationEnabled } : w
-    )
-  );
-
-  try {
-    // backendcall
-    await toggledNotifications(ticker.symbol, !ticker.notificationEnabled, ticker.type);
-  } catch (err) {
-    // if api fails, revert
-    console.error("Toggle failed:", err);
-    setWatchlist(prev =>
-      prev.map(w =>
-        w.tickerId === ticker.tickerId
-          ? { ...w, notificationEnabled: ticker.notificationEnabled }
-          : w
-      )
-    );
+  if (isLoading) {
+    return <Loading/>
   }
-   finally{
-      setTickerNotiLoading(null); //  wehn done, enable button again for toggling alerts/notis
-    }
-}
+ 
+  async function handleToggle(ticker: WatchlistItem) {
+    if (loadingTickers.has(ticker.tickerId)) return; // don't mess with loading ticker
 
+    setLoadingTickers(prev => new Set(prev).add(ticker.tickerId));
+
+    try {
+      await toggledNotifications(ticker.symbol, !ticker.notificationEnabled, ticker.type); //update in db
+      const newNotiEnabled = !ticker.notificationEnabled
+      setWatchlist(prev =>
+        prev.map(w => w.tickerId === ticker.tickerId
+          ? { ...w, notificationEnabled: newNotiEnabled } // extract selected ticker's props, set new notification value
+          : w
+        )
+      );
+    } catch (err) {
+      console.error("toggle failed: ", err)
+    }
+    finally {
+        setLoadingTickers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(ticker.tickerId);
+          return newSet;
+        }); //  wehn done, enable button again for toggling alerts/notis
+      }
+  }
 
   async function handleRemove(symbol: string) {
     try {
@@ -73,13 +72,6 @@ async function handleToggle(ticker: WatchlistItem) {
       console.error("Remove failed:", err);
     }
   }
-
-  if (loading)
-    return (
-      <Container paddingY={8}>
-        <Spinner />
-      </Container>
-    );
 
   return (
     <Container paddingY={8}>
@@ -109,10 +101,9 @@ async function handleToggle(ticker: WatchlistItem) {
 
                 <Table.Cell>
                   <Switch.Root
-                    checked={ticker.notificationEnabled ?? true}
+                    checked={ticker.notificationEnabled}
                     onCheckedChange={() => handleToggle(ticker)}
-                    opacity={tickerNotiLoading === ticker.tickerId ? 0.6 : 1} // only dim the one being toggled
-                    disabled={tickerNotiLoading === ticker.tickerId} //Prevent double-clicks
+                    disabled={loadingTickers.has(ticker.tickerId)} //Prevent double-clicks
                   >
                     <Switch.HiddenInput />
                     <Switch.Control>

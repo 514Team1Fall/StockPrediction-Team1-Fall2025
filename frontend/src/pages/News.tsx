@@ -1,6 +1,4 @@
 import { getNewsArticles, type NewsArticleTickers } from "@/api/article_api";
-// import type { User } from "../../../src/db/schema";
-// import type { NewsArticle } from "../../../src/db/schema.js";
 import { Link as ReactLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
@@ -11,45 +9,44 @@ import {
   Flex,
   Heading,
   Link,
-  Spinner,
   Table,
   Text,
 } from "@chakra-ui/react";
 import { LuArrowDown, LuArrowUp, LuExternalLink } from "react-icons/lu";
+import Loading from "./Loading";
 
-// type NewsProps = {
-//   user: User | null;
-// };
-
-export default function News(/*{ user }: NewsProps*/) {
+export default function News() {
   // const [isLoading, setIsLoading] = useState(true)
   const [articles, setArticles] = useState<NewsArticleTickers[]>([]);
   const [isloading , setLoading] = useState<boolean>(true);
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc'); // sortby newest by default
 
-
   useEffect(() => {
-    loadArticles();
-  }, []);
+      async function loadArticles() {
+        try {
+          setLoading(true); // make website preload data before loading page
+          const data = await getNewsArticles();
+          console.log("articles loading...", data);
+          setArticles(data);
+        } catch (err) {
+          console.error("Unable to load  articles", err);
+        } finally {
+          setLoading(false);
+        }
+      }
+      loadArticles();
+    }, []);
+  
+  // async function loadArticles() {
+  //   setLoading(true); // make website preload data before loading page
+  //   const data = await getNewsArticles();
+  //   console.log("articles loading...", data);
+  //   setArticles(data);
+  //   setLoading(false); // done data loading
+  // }
 
-  async function loadArticles() {
-    setLoading(true); // make website preload data before loading page
-    const data = await getNewsArticles();
-    console.log("articles loading...", data);
-    setArticles(data);
-    setLoading(false); // done data loading
-  }
-
-  // while loading, show spiner
-  if (isloading) {
-    return (
-      <Container paddingY={8}>
-        <Heading marginBottom={6}>News Articles</Heading>
-        <Flex justifyContent="center" paddingY={16}>
-          <Spinner size="xl" />
-        </Flex>
-      </Container>
-    );
+    if (isloading) {
+    return <Loading/>
   }
 
   const sortedArticles = [...articles].sort((a, b) => {
@@ -69,7 +66,7 @@ export default function News(/*{ user }: NewsProps*/) {
 
   function formatDate(articleDatePublished: string | Date | null) {
     if (!articleDatePublished) return "no date";
-    const date = new Date(articleDatePublished);  // ✅ Convert string to Date
+    const date = new Date(articleDatePublished); 
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -77,8 +74,6 @@ export default function News(/*{ user }: NewsProps*/) {
   }
 
   return (
-    // default container padding-left/right is 32px so we match it with 8
-    // doing stuff like paddingY{8} --> is value * 4px = actual px your using
     <Container paddingY={8}>
       <Heading marginBottom={6}>News Articles</Heading>
 
@@ -87,7 +82,6 @@ export default function News(/*{ user }: NewsProps*/) {
           <Table.Header>
             <Table.Row bg="gray.50">
               <Table.ColumnHeader>Title</Table.ColumnHeader>
-              {/* ✅ Clickable Published column */}
               <Table.ColumnHeader 
                 onClick={toggleSort}
                 cursor="pointer"
@@ -127,7 +121,7 @@ export default function News(/*{ user }: NewsProps*/) {
                   </Flex>
                 </Table.Cell>
                 <Table.Cell textAlign="end">
-                  <Button colorPalette="gray" variant="subtle">
+                  <Button colorPalette="gray" variant="subtle" asChild>
                     <ReactLink 
                       to={`/news/${article.articleId}`}
                       state = {{article}}
