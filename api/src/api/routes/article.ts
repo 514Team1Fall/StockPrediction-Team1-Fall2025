@@ -44,7 +44,7 @@ articleRouter.get("/findSentiments/:tickerSymbol", async (req, res) => {
  * articleId is sha256(url) hex
  */
 articleRouter.post("/", async (req: Request, res: Response) => {
-    const { title, url, summary, publishedAt } = req.body;
+    const { title, url, summary, publishedAt, overallSentimentScore, overallSentimentLabel } = req.body;
 
     if (typeof url !== "string" || url.trim().length === 0) {
         return res.status(400).json({ error: "Missing or invalid url" });
@@ -94,6 +94,8 @@ articleRouter.post("/", async (req: Request, res: Response) => {
         title: normalizedTitle,
         summary: summary,
         publishedAt: publishedAtDate,
+        overallSentimentScore: overallSentimentScore === undefined ? undefined : overallSentimentScore,
+        overallSentimentLabel: overallSentimentLabel === undefined ? undefined : overallSentimentLabel,
     };
 
     try {

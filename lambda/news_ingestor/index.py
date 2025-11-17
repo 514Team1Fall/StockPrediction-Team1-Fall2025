@@ -3,10 +3,9 @@ import json
 import hashlib
 import urllib.parse
 import urllib.request
-
+import boto3
 
 ALPHA_ENDPOINT = 'https://www.alphavantage.co/query?function=NEWS_SENTIMENT'
-
 
 def fetch_json(url: str, method: str = 'GET', body: dict | None = None, timeout_sec: int = 20) -> dict:
     data = None
@@ -41,6 +40,10 @@ def upsert_article(api_base_url: str, article: dict) -> dict:
         "summary": article.get("summary"),
         "publishedAt": article.get("time_published") or article.get("published_at"),
     }
+    if "overallSentimentScore" in article:
+        body["overallSentimentScore"] = article["overallSentimentScore"]
+    if "overallSentimentLabel" in article:
+        body["overallSentimentLabel"] = article["overallSentimentLabel"]
     try:
         created = fetch_json(f"{api_base_url}/articles", method='POST', body=body)
         return created
@@ -72,8 +75,24 @@ def ingest_batch(api_base_url: str, api_key: str, symbols: list[str], known_symb
     url = f"{ALPHA_ENDPOINT}&tickers={urllib.parse.quote(tickers_param)}&apikey={urllib.parse.quote(api_key)}"
     data = fetch_json(url)
     feed = data.get('feed') or data.get('articles') or []
+    comprehend = boto3.client('comprehend')
     for item in feed:
         try:
+            # Overall sentiment with Comprehend (combine title + summary; English)
+            try:
+                title = item.get("title") or ""
+                summary = item.get("summary") or ""
+                text = (title + ". " + summary).strip()
+                if text:
+                    res = comprehend.detect_sentiment(Text=text[:4800], LanguageCode='en')
+                    label = res.get("Sentiment")
+                    scores = res.get("SentimentScore", {})
+                    signed = float(scores.get("Positive", 0.0)) - float(scores.get("Negative", 0.0))
+                    item["overallSentimentLabel"] = label
+                    item["overallSentimentScore"] = round(signed, 4)
+            except Exception as se:
+                print(f"ERROR comprehend sentiment: {se}")
+
             created = upsert_article(api_base_url, item)
             article_id = created.get('articleId')
             if not article_id:

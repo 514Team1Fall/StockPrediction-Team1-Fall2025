@@ -22,6 +22,22 @@ resource "aws_iam_role_policy_attachment" "basic_logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy" "comprehend_allow" {
+  name = "${var.function_name}-comprehend"
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["comprehend:DetectSentiment", "comprehend:DetectKeyPhrases"]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_lambda_function" "this" {
   function_name = var.function_name
   role          = aws_iam_role.lambda_role.arn
