@@ -1,4 +1,3 @@
-import { API_URL } from "@/assets/config";
 import type { NewsArticle, NewsArticleTicker } from "../../../api/src/db/schema";
 
 const ARTICLE_API_ROUTE = '/api/articles';
@@ -15,7 +14,7 @@ export interface NewsArticleTickers extends NewsArticle { //news
  * @returns 
  */
 export async function getNewsArticles(): Promise<NewsArticleTickers[]> {
-    const response = await fetch(`${API_URL}${ARTICLE_API_ROUTE}`, {
+    const response = await fetch(`${ARTICLE_API_ROUTE}`, {
         credentials: "include",
     });
 
@@ -29,7 +28,7 @@ export async function getNewsArticles(): Promise<NewsArticleTickers[]> {
  */
 // articleRouter.get("/:articleId/tickers", async (req: Request, res: Response) => {
 export async function getTickersFromArticleId(articleId: string) {
-    const response = await fetch(`${API_URL}${ARTICLE_API_ROUTE}/${articleId}/tickers`, {
+    const response = await fetch(`${ARTICLE_API_ROUTE}/${articleId}/tickers`, {
         credentials: "include",
     });
 
