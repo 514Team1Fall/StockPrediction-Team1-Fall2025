@@ -19,7 +19,7 @@ To begin, make sure you go update your GitHub repository settings to include the
     - If not already added, add a n ew repository variable for AWS_REGION with the value of your desired AWS region (e.g., us-east-1).
     - Make sure it gets saved
 3. **CRUCIAL: Set the terraform remote state bucket within main.tf**
-    - In the `main.tf` file of your repository, locate the `backend "s3"` block.
+    - In the [main.tf](https://github.com/514Team1Fall/StockPrediction-Team1-Fall2025/blob/main/terraform/main.tf) file of your repository, locate the `backend "s3"` block.
     - Update the `bucket` attribute to specify the name of your S3 bucket that will be used for storing the Terraform state.
     - Ensure that the S3 bucket exists in your AWS account and has proper permissions set up to allow Terraform to access it.
 4. **Deploying The Project**:
