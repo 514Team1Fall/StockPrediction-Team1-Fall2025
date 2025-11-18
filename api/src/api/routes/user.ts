@@ -165,7 +165,7 @@ userRouter.patch("/watchlist/:symbol/notifications", auth, async (req: Request, 
  * Remove ticker from user's watchlist
  */
 userRouter.delete("/watchlist/:symbol", auth, async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+    const userId = req.user?.userId; // req.user.userId --> req.user?.userId;
     let symbol = req.params.symbol;
 
     if (typeof userId !== "string" || userId.trim() === "") {

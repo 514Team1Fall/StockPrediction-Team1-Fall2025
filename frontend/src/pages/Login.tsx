@@ -1,9 +1,10 @@
+import { API_URL } from "@/assets/config";
 import { Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 
 export default function Login() {
   // hmmmm
   function handleLogin() {
-    window.location.href = `/api/auth/login`;
+    window.location.href = `${API_URL}/api/auth/login`;
   }
 
   return (
@@ -11,8 +12,8 @@ export default function Login() {
       direction="column"
       align="center"
       justify="center"
-      minHeight="100vh"
-      width="100vw"
+      width="100%"
+      height="100%"
       bg="gray.100"
     >
       <VStack gap="1.2rem">

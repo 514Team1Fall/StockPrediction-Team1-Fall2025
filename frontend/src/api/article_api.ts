@@ -1,39 +1,45 @@
-import type { NewsArticle } from "../../../api/src/db/schema";
+import { API_URL } from "@/assets/config";
+import type { NewsArticle, NewsArticleTicker } from "../../../api/src/db/schema";
 
-// const TICKER_API_ROUTE = '/api/tickers';
 const ARTICLE_API_ROUTE = '/api/articles';
-// const USER_API_ROUTE = '/api/users';
-// const AUTH_API_ROUTE = '/api/auth';
 
-export interface ArticleTickers {
-    tickerId: number;
-    symbol: string;
-    tickerSentimentScore: string | null;
-    tickerSentimentLabel: string | null;
-    relevanceScore: string | null;
+export interface ArticleTickers extends NewsArticleTicker{ // tickers in a article + symbol property
+    symbol: string
 }
-export interface NewsArticleTickers extends NewsArticle {
+export interface NewsArticleTickers extends NewsArticle { //news
     tickers: ArticleTickers[];
 }
-
+// articleId, url, title, summary,publishedat, {tickers: {number: articleid, tickerid, tickersentimentscore, label, releavence, symbol}}
+/**
+ * Get all articles with their ticker sentiments
+ * @returns 
+ */
 export async function getNewsArticles(): Promise<NewsArticleTickers[]> {
-    try {
-        const response = await fetch(`${ARTICLE_API_ROUTE}/`, {
-            credentials: "include",
-        });
+    const response = await fetch(`${API_URL}${ARTICLE_API_ROUTE}`, {
+        credentials: "include",
+    });
 
-        console.log(`getnewsarticle frotnend...`, response)
-        if (!response.ok) {
-            console.error('Failed to fetch articles');
-            return [];
-        }
+    if (!response.ok) throw new Error('failed to get articles');
 
-        const data = await response.json();
-        console.log(`getnewsarticle`, data);
-        return data;
-
-    } catch (error) {
-        console.error('Error fetching articles:', error);
-        return [];
-    }
+    return response.json();
 }
+
+/**
+ * Get sentiments for all tickers on an article
+ */
+// articleRouter.get("/:articleId/tickers", async (req: Request, res: Response) => {
+export async function getTickersFromArticleId(articleId: string) {
+    const response = await fetch(`${API_URL}${ARTICLE_API_ROUTE}/${articleId}/tickers`, {
+        credentials: "include",
+    });
+
+    console.log(`get tickers from article frotnend...`, response)
+
+    if (!response.ok) throw new Error('failed to gett article tickers');
+
+    return response.json();
+}
+
+// export async function getArticleFromArticleId(articleId: string) {
+//     return articleId;
+// }
