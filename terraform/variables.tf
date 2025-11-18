@@ -27,11 +27,6 @@ variable "repo_url" {
   type        = string
 }
 
-variable "state_store_bucket" {
-  description = "S3 bucket name for Terraform state storage"
-  type        = string
-}
-
 variable "alphavantage_api_key" {
   description = "Alpha Vantage API key"
   type        = string
