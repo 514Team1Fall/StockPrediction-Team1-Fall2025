@@ -13,4 +13,8 @@ resource "aws_db_instance" "stock_rds" {
   skip_final_snapshot  = true  # Skip final snapshot when destroying the database
   vpc_security_group_ids = [var.rds_sg_id]  # Attach the RDS security group
   db_subnet_group_name = var.db_subnet_group_name  # Use the created subnet group
+
+  tags = {
+    Name = "StockPredictor-RDS"
+  }
 }

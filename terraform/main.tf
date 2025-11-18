@@ -1,5 +1,14 @@
 # Provider Configuration
 # Specifies the AWS provider and region for Terraform to manage resources in.
+terraform {
+  backend "s3" {
+      bucket = "rit-514-team1-2025"
+      key    = "deployment/terraform.tfstate"
+      encrypt= true
+      region = "us-east-1"
+  }
+}
+
 provider "aws" {
   region = "us-east-1"
 }
@@ -150,7 +159,7 @@ module "lambda_news" {
   api_base_url           = "https://${aws_cloudfront_distribution.cdn.domain_name}/api"
   alphavantage_api_key   = var.alphavantage_api_key
   source_dir             = "${path.root}/../lambda/news_ingestor"
-  schedule_expression    = "rate(1 hour)"
+  schedule_expression    = "rate(30 minutes)"
 }
 
 resource "aws_eip_association" "ec2_eip_assoc" {

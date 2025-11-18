@@ -1,0 +1,7 @@
+drizzle/
+.idea/
+.vscode/
+.DS_Store
+.env
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
