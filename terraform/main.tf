@@ -2,7 +2,7 @@
 # Specifies the AWS provider and region for Terraform to manage resources in.
 terraform {
   backend "s3" {
-      bucket = "rit-514-team1-2025"
+      bucket = "rit-514-team1-2025" # CHANGE UPON YOUR DEPLOYMENT
       key    = "deployment/terraform.tfstate"
       encrypt= true
       region = "us-east-1"
