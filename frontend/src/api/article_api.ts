@@ -14,7 +14,7 @@ export interface NewsArticleTickers extends NewsArticle { //news
  * @returns 
  */
 export async function getNewsArticles(): Promise<NewsArticleTickers[]> {
-    const response = await fetch(`${ARTICLE_API_ROUTE}`, {
+    const response = await fetch(`${ARTICLE_API_ROUTE}/`, {
         credentials: "include",
     });
 
