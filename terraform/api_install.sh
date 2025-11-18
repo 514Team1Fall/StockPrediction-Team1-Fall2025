@@ -9,6 +9,9 @@ export APP_URL=${app_url}
 export AUTH_CLIENT_ID=${auth_client_id}
 export AUTH_CLIENT_SECRET=${auth_client_secret}
 export PORT=5000
+export AWS_ACCESS_KEY_ID=${aws_access_key_id}
+export AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}
+export AWS_REGION=${aws_region}
 
 yum update -y
 
