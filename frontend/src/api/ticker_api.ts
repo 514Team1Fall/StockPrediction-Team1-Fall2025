@@ -1,0 +1,1 @@
+// const TICKER_API_ROUTE = '/api/tickers';
