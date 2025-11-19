@@ -95,5 +95,5 @@ def handler(event, context):
         body = {"articles": all_articles, "sentiments": all_sentiments}
         fetch_json(f"{api_base_url}/articles/bulk", method='POST', body=body)
 
-    body = {"ok": True, "batches": len(batches), "articles": len(all_articles), "sentiments": len(all_sentiments)}
+    body = {"ok": True, "articles": len(all_articles), "sentiments": len(all_sentiments)}
     return {"statusCode": 200, "body": json.dumps(body)}
