@@ -257,7 +257,7 @@ articleRouter.post("/bulk", async (req: Request, res: Response) => {
             await bulkUpsertArticleTickerSentiments(sentiments);
 
             for (const sentiment of sentiments) {
-                if (sentiment.tickerSentimentScore > 0) {
+                if (sentiment.tickerSentimentScore < 0) {
                     const article = parsedArticles.find(a => a.articleId === sentiment.articleId);
                     if (article === undefined) {
                         continue;
