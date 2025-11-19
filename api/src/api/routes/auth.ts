@@ -4,6 +4,7 @@ import * as client from 'openid-client'
 import { clientConfig, getClientConfig, sessionOptions } from "../../lib/auth.js";
 import { createSession, createUser, getSessionById, getUserByEmail } from "../../db/db_api.js";
 import { randomUUID, randomBytes } from "crypto";
+import { createSubscription } from "../../lib/sns.js";
 
 export const authRouter = express.Router();
 
@@ -63,6 +64,8 @@ authRouter.get("/callback", async (req: Request, res: Response) => {
             userId,
             email: claims.email as string,
         })
+
+        await createSubscription(claims.email as string, []);
     }
 
     const sessionToken = randomBytes(32).toString('hex');
