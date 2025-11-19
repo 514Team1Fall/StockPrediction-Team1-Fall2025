@@ -15,7 +15,7 @@ export async function checkSession(): Promise<User | null> {
     }
 
     const data: User = await response.json();
-    console.log('session data:', data);
+    // console.log('session data:', data);
 
     return data
 

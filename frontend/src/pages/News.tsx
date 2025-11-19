@@ -26,7 +26,7 @@ export default function News() {
         try {
           setLoading(true); // make website preload data before loading page
           const data = await getNewsArticles();
-          console.log("articles loading...", data);
+          // console.log("articles loading...", data);
           setArticles(data);
         } catch (err) {
           console.error("Unable to load  articles", err);

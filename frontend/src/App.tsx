@@ -8,7 +8,6 @@ import Login from "./pages/Login";
 import Watchlist from "./pages/Watchlist";
 import News from "./pages/News";
 import NewsArticle from "./pages/NewsArticle";
-import Analytics from "./pages/Analytics";
 import {
   Box,
   Flex,
@@ -74,7 +73,6 @@ function App() {
               <Route path="/news" element={<News />} />
               <Route path="/watchlist" element={<Watchlist user={user} />} />
               <Route path="/news/:articleId" element={<NewsArticle />} />
-              <Route path="/analytics" element={<Analytics />} />
             </Route>
             {/* route for nonlogged-in users */}
             <Route

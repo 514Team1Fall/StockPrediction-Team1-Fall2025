@@ -76,7 +76,7 @@ export default function NewsArticle(/*user: NewsArticleProps*/) {
       } else {
         await addToUserWatchlist(ticker.symbol);
       }
-      console.log("is currently added ticker?: ", isCurrentlyAdded)
+      // console.log("is currently added ticker?: ", isCurrentlyAdded)
 
       setAddedTickers(prev => {
         const newSet = new Set(prev);

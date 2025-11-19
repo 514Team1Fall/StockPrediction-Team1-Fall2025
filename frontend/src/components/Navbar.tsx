@@ -34,9 +34,6 @@ export default function Navbar({ user, handleLogout }: NavbarProps) {
           <ChakraLink _hover={{ bg: "gray.100" }} asChild>
             <ReactLink to="/watchlist">Watchlist</ReactLink>
           </ChakraLink>
-          <ChakraLink _hover={{ bg: "gray.100" }} asChild>
-            <ReactLink to="/analytics">Analytics</ReactLink>
-          </ChakraLink>
         </Flex>
       ) : (
         <></>
