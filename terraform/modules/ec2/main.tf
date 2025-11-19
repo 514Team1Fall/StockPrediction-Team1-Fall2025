@@ -42,6 +42,7 @@ resource "aws_instance" "stock_ec2" {
     aws_access_key        = var.aws_access_key
     aws_secret_access_key = var.aws_secret_access_key
     aws_region            = var.aws_region
+    sns_topic_arn         = var.sns_topic_arn
   })
 
   tags = {

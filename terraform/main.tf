@@ -2,7 +2,7 @@
 # Specifies the AWS provider and region for Terraform to manage resources in.
 terraform {
   backend "s3" {
-    bucket  = "rit-514-team1-2025" # CHANGE UPON YOUR DEPLOYMENT
+    bucket  = "rtyocum-514-team1-2025-teststatjaklfjdlksajfl" # CHANGE UPON YOUR DEPLOYMENT
     key     = "deployment/terraform.tfstate"
     encrypt = true
     region  = "us-east-1"
@@ -119,6 +119,10 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 }
 
+resource "aws_sns_topic" "stock_alerts" {
+  name = "stock-alerts-topic"
+}
+
 module "s3" {
   source      = "./modules/s3"
   bucket_name = "swen-514-stock-predictor-app-${random_id.suffix.hex}"
@@ -154,6 +158,7 @@ module "ec2" {
   aws_access_key        = var.aws_access_key
   aws_secret_access_key = var.aws_secret_access_key
   aws_region            = var.aws_region
+  sns_topic_arn         = aws_sns_topic.stock_alerts.arn
 }
 
 module "lambda_news" {

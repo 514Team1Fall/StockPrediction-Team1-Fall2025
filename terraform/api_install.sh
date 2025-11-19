@@ -9,9 +9,10 @@ export APP_URL=${app_url}
 export AUTH_CLIENT_ID=${auth_client_id}
 export AUTH_CLIENT_SECRET=${auth_client_secret}
 export PORT=5000
-export AWS_ACCESS_KEY_ID=${aws_access_key_id}
+export AWS_ACCESS_KEY_ID=${aws_access_key}
 export AWS_SECRET_ACCESS_KEY=${aws_secret_access_key}
 export AWS_REGION=${aws_region}
+export SNS_TOPIC_ARN=${sns_topic_arn}
 
 yum update -y
 
@@ -24,5 +25,4 @@ cd /opt/api/api
 npm install
 npm run build
 DATABASE_URL="mysql://${db_username}:${db_password}@${db_endpoint}/${db_name}" npm exec drizzle-kit push
-npm run seed
 nohup npm start > /opt/api/app.log 2>&1 &
