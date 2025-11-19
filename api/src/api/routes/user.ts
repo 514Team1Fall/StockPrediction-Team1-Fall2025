@@ -46,6 +46,9 @@ userRouter.patch("/notifications", auth, async (req: Request, res: Response) => 
             const tickerSymbols = watchlistTickers.map(t => t.symbol);
             await updateSubscriptionFilterPolicy(user.email as string, tickerSymbols);
             // update user with notificationArn
+        } else {
+            // remove all subscriptions for this user
+            await unsubscribeAll(user.email as string);
         }
 
         return res.json({ success: !!ok });

@@ -79,10 +79,6 @@ export async function updateSubscriptionFilterPolicy(
     );
 }
 
-export async function unsubscribeAll(subscriptionArn: string): Promise<void> {
-    await sns.send(
-        new UnsubscribeCommand({
-            SubscriptionArn: subscriptionArn,
-        })
-    );
+export async function unsubscribeAll(email: string): Promise<void> {
+    await updateSubscriptionFilterPolicy(email, ['__NO_MATCH__']);
 }
