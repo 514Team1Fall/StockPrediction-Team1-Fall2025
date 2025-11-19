@@ -27,9 +27,8 @@ def compute_article_id(url: str) -> str:
     return h.hexdigest()
 
 
-def ingest_batch(api_base_url: str, api_key: str, symbols: list[str], all_articles: list, all_sentiments: list) -> None:
-    tickers_param = ','.join(symbols)
-    url = f"{ALPHA_ENDPOINT}&tickers={urllib.parse.quote(tickers_param)}&apikey={urllib.parse.quote(api_key)}"
+def ingest_batch(api_key: str, all_articles: list, all_sentiments: list) -> None:
+    url = f"{ALPHA_ENDPOINT}&apikey={urllib.parse.quote(api_key)}"
     data = fetch_json(url)
     feed = data.get('feed') or data.get('articles') or []
     comprehend = boto3.client('comprehend')
@@ -86,16 +85,10 @@ def handler(event, context):
     if not api_key or not api_base_url:
         raise RuntimeError('Missing required env: ALPHAVANTAGE_API_KEY or API_BASE_URL')
 
-    all_tickers = fetch_json(f"{api_base_url}/tickers/byType/stock")  # Only stocks, as per original
-    stock_symbols = [t["symbol"] for t in all_tickers if t.get("symbol")]
-    unique = list(dict.fromkeys(stock_symbols))  # preserve order & unique
-    batches = [unique[i:i + 10] for i in range(0, len(unique), 10)]
-
     all_articles = []
     all_sentiments = []
 
-    for b in batches:
-        ingest_batch(api_base_url, api_key, b, all_articles, all_sentiments)
+    ingest_batch(api_key, all_articles, all_sentiments)
 
     # Bulk upsert
     if all_articles or all_sentiments:
