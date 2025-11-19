@@ -25,4 +25,5 @@ cd /opt/api/api
 npm install
 npm run build
 DATABASE_URL="mysql://${db_username}:${db_password}@${db_endpoint}/${db_name}" npm exec drizzle-kit push
+npm run seed
 nohup npm start > /opt/api/app.log 2>&1 &
