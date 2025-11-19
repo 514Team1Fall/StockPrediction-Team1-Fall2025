@@ -12,10 +12,11 @@ import type { Ticker } from "../../../api/src/db/schema";
 import { searchTicker } from "@/api/ticker_api";
 
 export default function SearchBarTicker({
-  onSelect, watchlistSymbols
+  onSelect,
+  watchlistSymbols,
 }: {
   onSelect: (symbol: string) => void;
-   watchlistSymbols: string[];
+  watchlistSymbols: string[];
 }) {
   const [inputValue, setInputValue] = useState("");
   const [selectedValue, setSelectedValue] = useState<string[]>([]); // Add this
@@ -117,7 +118,9 @@ export default function SearchBarTicker({
                       ({ticker.type})
                     </Span>
                   </HStack>
-                     {watchlistSymbols.includes(ticker.symbol) && <Combobox.ItemIndicator />}
+                  {watchlistSymbols.includes(ticker.symbol) && (
+                    <Combobox.ItemIndicator />
+                  )}
                 </Combobox.Item>
               ))
             )}

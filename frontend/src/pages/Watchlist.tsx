@@ -112,7 +112,10 @@ export default function Watchlist({ user }: WatchlistProps) {
     <Container paddingY={8}>
       <Heading mb={6}>{user?.email}'s Watchlist</Heading>
       <Box mb={6}>
-        <SearchBarTicker onSelect={handleAddTicker} watchlistSymbols={watchlist.map(t => t.symbol)} />
+        <SearchBarTicker
+          onSelect={handleAddTicker}
+          watchlistSymbols={watchlist.map((t) => t.symbol)}
+        />
       </Box>
       {watchlist.length === 0 ? (
         <Text>

@@ -18,25 +18,25 @@ import Loading from "./Loading";
 export default function News() {
   // const [isLoading, setIsLoading] = useState(true)
   const [articles, setArticles] = useState<NewsArticleTickers[]>([]);
-  const [isloading , setLoading] = useState<boolean>(true);
-  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc'); // sortby newest by default
+  const [isloading, setLoading] = useState<boolean>(true);
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc"); // sortby newest by default
 
   useEffect(() => {
-      async function loadArticles() {
-        try {
-          setLoading(true); // make website preload data before loading page
-          const data = await getNewsArticles();
-          // console.log("articles loading...", data);
-          setArticles(data);
-        } catch (err) {
-          console.error("Unable to load  articles", err);
-        } finally {
-          setLoading(false);
-        }
+    async function loadArticles() {
+      try {
+        setLoading(true); // make website preload data before loading page
+        const data = await getNewsArticles();
+        // console.log("articles loading...", data);
+        setArticles(data);
+      } catch (err) {
+        console.error("Unable to load  articles", err);
+      } finally {
+        setLoading(false);
       }
-      loadArticles();
-    }, []);
-  
+    }
+    loadArticles();
+  }, []);
+
   // async function loadArticles() {
   //   setLoading(true); // make website preload data before loading page
   //   const data = await getNewsArticles();
@@ -45,32 +45,33 @@ export default function News() {
   //   setLoading(false); // done data loading
   // }
 
-    if (isloading) {
-    return <Loading/>
+  if (isloading) {
+    return <Loading />;
   }
 
   const sortedArticles = [...articles].sort((a, b) => {
     // if either dates are null shove them to the backo f the LINE
     if (!a.publishedAt) return 1;
     if (!b.publishedAt) return -1;
-    
+
     // is o converter
     const dateA = new Date(a.publishedAt).getTime();
     const dateB = new Date(b.publishedAt).getTime();
-    return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
   });
 
   function toggleSort() {
-    setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
   }
 
   function formatDate(articleDatePublished: string | Date | null) {
     if (!articleDatePublished) return "no date";
-    const date = new Date(articleDatePublished); 
+    const date = new Date(articleDatePublished);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: "numeric"});
+      year: "numeric",
+    });
   }
 
   return (
@@ -82,14 +83,14 @@ export default function News() {
           <Table.Header>
             <Table.Row bg="gray.50">
               <Table.ColumnHeader>Title</Table.ColumnHeader>
-              <Table.ColumnHeader 
+              <Table.ColumnHeader
                 onClick={toggleSort}
                 cursor="pointer"
                 _hover={{ bg: "gray.100" }}
               >
                 <Flex alignItems="center" gap={1}>
                   Published
-                  {sortOrder === 'desc' ? <LuArrowDown /> : <LuArrowUp />}
+                  {sortOrder === "desc" ? <LuArrowDown /> : <LuArrowUp />}
                 </Flex>
               </Table.ColumnHeader>
               <Table.ColumnHeader>Tickers</Table.ColumnHeader>
@@ -107,7 +108,7 @@ export default function News() {
                   </Link>
                 </Table.Cell>
 
-                 <Table.Cell>
+                <Table.Cell>
                   <Text fontSize="sm" color="gray.600">
                     {formatDate(article.publishedAt)}
                   </Text>
@@ -122,9 +123,9 @@ export default function News() {
                 </Table.Cell>
                 <Table.Cell textAlign="end">
                   <Button colorPalette="gray" variant="subtle" asChild>
-                    <ReactLink 
+                    <ReactLink
                       to={`/news/${article.articleId}`}
-                      state = {{article}}
+                      state={{ article }}
                     >
                       View Insights
                     </ReactLink>
