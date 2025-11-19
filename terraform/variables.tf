@@ -10,6 +10,24 @@ variable "db_password" {
   sensitive   = true
 }
 
+variable "aws_access_key" {
+  description = "AWS Access Key"
+  type        = string
+  sensitive   = true
+}
+
+variable "aws_secret_access_key" {
+  description = "AWS Secret Access Key"
+  type        = string
+  sensitive   = true
+}
+
+variable "aws_region" {
+  description = "AWS region to deploy resources"
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "db_name" {
   description = "Name of the WordPress database"
   type        = string
@@ -32,3 +50,4 @@ variable "alphavantage_api_key" {
   type        = string
   sensitive   = true
 }
+

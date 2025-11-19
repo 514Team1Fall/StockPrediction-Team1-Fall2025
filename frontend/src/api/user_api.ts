@@ -1,4 +1,3 @@
-import { API_URL } from "@/assets/config";
 import type { UserWatchlist } from "../../../api/src/db/schema";
 // import type { User } from "../../../api/src/db/schema";
 
@@ -9,7 +8,7 @@ export interface WatchlistItem extends UserWatchlist {
 }
 
 export async function addToUserWatchlist(symbol: string, type?: "stock" | "crypto" ) {
-    const response = await fetch(`${API_URL}${USER_API_ROUTE}/watchlist`, {
+    const response = await fetch(`${USER_API_ROUTE}/watchlist`, {
         method: "POST",
         headers: {"Content-type": "application/json"},
         credentials: "include",
@@ -25,7 +24,7 @@ export async function addToUserWatchlist(symbol: string, type?: "stock" | "crypt
 
 export async function removeFromUserWatchlist(symbol: string) {
 // frontend action --> make func to handle  endpoint call (Errors, and paramters if needed) --> insert necessary info for backend to do work
-    const response = await fetch(`${API_URL}${USER_API_ROUTE}/watchlist/${symbol}`, {
+    const response = await fetch(`${USER_API_ROUTE}/watchlist/${symbol}`, {
         method: "DELETE",
         headers: {"Content-type": "application/json"},
         credentials: "include",
@@ -38,7 +37,7 @@ export async function removeFromUserWatchlist(symbol: string) {
 
 
 export async function toggledNotifications(symbol: string, enabled: boolean, type: "stock" | "crypto") {
-    const response = await fetch(`${API_URL}${USER_API_ROUTE}/watchlist/${symbol}/notifications`, {
+    const response = await fetch(`${USER_API_ROUTE}/watchlist/${symbol}/notifications`, {
         method: "PATCH",
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({ enabled, type }),
@@ -55,7 +54,7 @@ export async function toggledNotifications(symbol: string, enabled: boolean, typ
  * @returns userwatchlist tickers
  */
 export async function getUserWatchlist() {
-    const response = await fetch(`${API_URL}${USER_API_ROUTE}/watchlist`, {
+    const response = await fetch(`${USER_API_ROUTE}/watchlist`, {
         credentials: "include",
     });
 

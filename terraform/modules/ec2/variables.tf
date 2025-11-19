@@ -10,3 +10,7 @@ variable "auth_issuer" {}
 variable "auth_client_id" {}
 variable "auth_client_secret" {}
 variable "repo_url" {}
+variable "aws_access_key" {}
+variable "aws_secret_access_key" {}
+variable "aws_region" {}
+variable "sns_topic_arn" {}

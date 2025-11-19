@@ -21,58 +21,14 @@ def fetch_json(url: str, method: str = 'GET', body: dict | None = None, timeout_
         return json.loads(text)
 
 
-def get_all_tickers(api_base_url: str) -> list[dict]:
-    url = f"{api_base_url}/tickers/byType/all"
-    rows = fetch_json(url)
-    return [{"symbol": r.get("symbol"), "type": r.get("type")} for r in rows]
-
-
 def compute_article_id(url: str) -> str:
     h = hashlib.sha256()
     h.update((url or "").strip().encode('utf-8'))
     return h.hexdigest()
 
 
-def upsert_article(api_base_url: str, article: dict) -> dict:
-    body = {
-        "title": article.get("title"),
-        "url": article.get("url"),
-        "summary": article.get("summary"),
-        "publishedAt": article.get("time_published") or article.get("published_at"),
-    }
-    if "overallSentimentScore" in article:
-        body["overallSentimentScore"] = article["overallSentimentScore"]
-    if "overallSentimentLabel" in article:
-        body["overallSentimentLabel"] = article["overallSentimentLabel"]
-    try:
-        created = fetch_json(f"{api_base_url}/articles", method='POST', body=body)
-        return created
-    except Exception as e:
-        # If exists (409), compute deterministic id and continue
-        msg = str(e)
-        if 'HTTP 409' in msg:
-            return {"articleId": compute_article_id(article.get("url"))}
-        raise
-
-
-def upsert_ticker_sentiment(api_base_url: str, article_id: str, s: dict) -> None:
-    body = {
-        "tickerSymbol": s.get("ticker"),
-        "tickerSentimentScore": s.get("ticker_sentiment_score"),
-        "tickerSentimentLabel": s.get("ticker_sentiment_label"),
-        "relevanceScore": s.get("relevance_score"),
-    }
-    # Will raise if non-2xx
-    fetch_json(f"{api_base_url}/articles/{article_id}/tickers", method='POST', body=body)
-
-
-def chunk(seq: list[str], size: int) -> list[list[str]]:
-    return [seq[i:i + size] for i in range(0, len(seq), size)]
-
-
-def ingest_batch(api_base_url: str, api_key: str, symbols: list[str], known_symbols: set[str]) -> None:
-    tickers_param = ','.join(symbols)
-    url = f"{ALPHA_ENDPOINT}&tickers={urllib.parse.quote(tickers_param)}&apikey={urllib.parse.quote(api_key)}"
+def ingest_batch(api_key: str, all_articles: list, all_sentiments: list) -> None:
+    url = f"{ALPHA_ENDPOINT}&apikey={urllib.parse.quote(api_key)}"
     data = fetch_json(url)
     feed = data.get('feed') or data.get('articles') or []
     comprehend = boto3.client('comprehend')
@@ -93,16 +49,46 @@ def ingest_batch(api_base_url: str, api_key: str, symbols: list[str], known_symb
             except Exception as se:
                 print(f"ERROR comprehend sentiment: {se}")
 
-            created = upsert_article(api_base_url, item)
-            article_id = created.get('articleId')
-            if not article_id:
-                continue
-            sentiments = [s for s in (item.get('ticker_sentiment') or []) if s.get('ticker') in known_symbols]
+            article_id = compute_article_id(item.get("url"))
+            article = {
+                "articleId": article_id,
+                "title": item.get("title"),
+                "url": item.get("url"),
+                "summary": item.get("summary"),
+                "publishedAt": item.get("time_published") or item.get("published_at"),
+                "overallSentimentScore": item.get("overallSentimentScore"),
+                "overallSentimentLabel": item.get("overallSentimentLabel"),
+            }
+            all_articles.append(article)
+
+            # Per-ticker sentiment: reuse overall text for each ticker (approx)
+            sentiments = item.get('ticker_sentiment') or []
             for s in sentiments:
-                try:
-                    upsert_ticker_sentiment(api_base_url, article_id, s)
-                except Exception as inner:
-                    print(f"ERROR upserting sentiment for {item.get('url')}: {inner}")
+                ticker = s.get("ticker", "").split(":")[-1]  # Strip prefix
+                if ticker:
+                    # Compute sentiment per ticker using the same text (or contextualize if possible)
+                    try:
+                        if text:
+                            res = comprehend.detect_sentiment(Text=text[:4800], LanguageCode='en')
+                            ticker_label = res.get("Sentiment")
+                            ticker_scores = res.get("SentimentScore", {})
+                            ticker_signed = float(ticker_scores.get("Positive", 0.0)) - float(ticker_scores.get("Negative", 0.0))
+                        else:
+                            ticker_label = None
+                            ticker_signed = None
+                    except Exception as te:
+                        print(f"ERROR ticker sentiment for {ticker}: {te}")
+                        ticker_label = None
+                        ticker_signed = None
+
+                    sentiment = {
+                        "articleId": article_id,
+                        "tickerSymbol": ticker,
+                        "tickerSentimentScore": round(ticker_signed, 4) if ticker_signed is not None else None,
+                        "tickerSentimentLabel": ticker_label,
+                        "relevanceScore": s.get("relevance_score"),
+                    }
+                    all_sentiments.append(sentiment)
         except Exception as outer:
             print(f"ERROR processing article {item.get('url')}: {outer}")
 
@@ -114,16 +100,15 @@ def handler(event, context):
     if not api_key or not api_base_url:
         raise RuntimeError('Missing required env: ALPHAVANTAGE_API_KEY or API_BASE_URL')
 
-    all_tickers = get_all_tickers(api_base_url)
-    stock_symbols = [t["symbol"] for t in all_tickers if t.get("type") == 'stock' and t.get("symbol")]
-    unique = list(dict.fromkeys(stock_symbols))  # preserve order & unique
-    known = set(unique)
-    batches = chunk(unique, 10)
+    all_articles = []
+    all_sentiments = []
 
-    for b in batches:
-        ingest_batch(api_base_url, api_key, b, known)
+    ingest_batch(api_key, all_articles, all_sentiments)
 
-    body = {"ok": True, "batches": len(batches)}
+    # Bulk upsert
+    if all_articles or all_sentiments:
+        body = {"articles": all_articles, "sentiments": all_sentiments}
+        fetch_json(f"{api_base_url}/articles/bulk", method='POST', body=body)
+
+    body = {"ok": True, "articles": len(all_articles), "sentiments": len(all_sentiments)}
     return {"statusCode": 200, "body": json.dumps(body)}
-
-
