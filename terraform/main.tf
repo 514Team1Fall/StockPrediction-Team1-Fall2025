@@ -2,10 +2,10 @@
 # Specifies the AWS provider and region for Terraform to manage resources in.
 terraform {
   backend "s3" {
-      bucket = "rit-swen514-team1-2025"
-      key    = "deployment/terraform.tfstate"
-      encrypt= true
-      region = "us-east-2"
+    bucket  = "rit-swen514-team1-2025" # CHANGE UPON YOUR DEPLOYMENT
+    key     = "deployment/terraform.tfstate"
+    encrypt = true
+    region  = "us-east-2"
   }
 }
 
@@ -138,28 +138,31 @@ module "cognito" {
 
 # EC2
 module "ec2" {
-  source             = "./modules/ec2"
-  db_endpoint        = module.rds.db_endpoint
-  public_subnet_id   = module.vpc.public_subnet_id
-  db_username        = var.db_username
-  db_password        = var.db_password
-  db_name            = var.db_name
-  key_name           = var.key_name
-  ec2_sg_id          = module.security.ec2_sg_id
-  app_url            = "https://${aws_cloudfront_distribution.cdn.domain_name}"
-  auth_issuer        = module.cognito.issuer
-  auth_client_id     = module.cognito.client_id
-  auth_client_secret = module.cognito.client_secret
-  repo_url           = var.repo_url
+  source                = "./modules/ec2"
+  db_endpoint           = module.rds.db_endpoint
+  public_subnet_id      = module.vpc.public_subnet_id
+  db_username           = var.db_username
+  db_password           = var.db_password
+  db_name               = var.db_name
+  key_name              = var.key_name
+  ec2_sg_id             = module.security.ec2_sg_id
+  app_url               = "https://${aws_cloudfront_distribution.cdn.domain_name}"
+  auth_issuer           = module.cognito.issuer
+  auth_client_id        = module.cognito.client_id
+  auth_client_secret    = module.cognito.client_secret
+  repo_url              = var.repo_url
+  aws_access_key        = var.aws_access_key
+  aws_secret_access_key = var.aws_secret_access_key
+  aws_region            = var.aws_region
 }
 
 module "lambda_news" {
-  source                 = "./modules/lambda_news"
-  function_name          = "news-ingestor"
-  api_base_url           = "https://${aws_cloudfront_distribution.cdn.domain_name}/api"
-  alphavantage_api_key   = var.alphavantage_api_key
-  source_dir             = "${path.root}/../lambda/news_ingestor"
-  schedule_expression    = "rate(30 minutes)"
+  source               = "./modules/lambda_news"
+  function_name        = "news-ingestor"
+  api_base_url         = "https://${aws_cloudfront_distribution.cdn.domain_name}/api"
+  alphavantage_api_key = var.alphavantage_api_key
+  source_dir           = "${path.root}/../lambda/news_ingestor"
+  schedule_expression  = "rate(5 minutes)"
 }
 
 resource "aws_eip_association" "ec2_eip_assoc" {

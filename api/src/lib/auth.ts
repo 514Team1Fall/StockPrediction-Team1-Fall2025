@@ -8,7 +8,7 @@ export const clientConfig = {
     client_id: process.env.AUTH_CLIENT_ID!,
     client_secret: process.env.AUTH_CLIENT_SECRET!,
     scope: "email openid profile",
-    redirect_uri: `${process.env.APP_URL!}/api/auth/callback/`, 
+    redirect_uri: `${process.env.APP_URL!}/api/auth/callback/`,
     post_logout_redirect_uri: `${process.env.APP_URL!}`,
     response_type: "code",
     grant_type: "authorization_code",

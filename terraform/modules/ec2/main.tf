@@ -30,15 +30,18 @@ resource "aws_instance" "stock_ec2" {
   key_name               = var.key_name                      # SSH key name from variable
 
   user_data = templatefile("api_install.sh", {
-    db_username        = var.db_username
-    db_password        = var.db_password
-    db_name            = var.db_name
-    db_endpoint        = var.db_endpoint
-    app_url            = var.app_url
-    auth_issuer        = var.auth_issuer
-    auth_client_id     = var.auth_client_id
-    auth_client_secret = var.auth_client_secret
-    repo_url           = var.repo_url
+    db_username           = var.db_username
+    db_password           = var.db_password
+    db_name               = var.db_name
+    db_endpoint           = var.db_endpoint
+    app_url               = var.app_url
+    auth_issuer           = var.auth_issuer
+    auth_client_id        = var.auth_client_id
+    auth_client_secret    = var.auth_client_secret
+    repo_url              = var.repo_url
+    aws_access_key        = var.aws_access_key
+    aws_secret_access_key = var.aws_secret_access_key
+    aws_region            = var.aws_region
   })
 
   tags = {

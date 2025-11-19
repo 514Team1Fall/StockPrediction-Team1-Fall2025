@@ -1,10 +1,9 @@
-import { API_URL } from "@/assets/config";
 import { Button, Flex, Heading, Text, VStack } from "@chakra-ui/react";
 
 export default function Login() {
   // hmmmm
   function handleLogin() {
-    window.location.href = `${API_URL}/api/auth/login`;
+    window.location.href = `/api/auth/login`;
   }
 
   return (
