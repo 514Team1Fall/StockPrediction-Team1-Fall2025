@@ -22,7 +22,7 @@ variable "source_dir" {
 variable "schedule_expression" {
   type        = string
   description = "EventBridge schedule expression"
-  default     = "rate(1 hour)"
+  default     = "rate(5 minutes)"
 }
 
 

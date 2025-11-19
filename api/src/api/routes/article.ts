@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import crypto from "crypto";
 import {
+    bulkCreateNewsArticles, bulkUpsertArticleTickerSentiments,
     createNewsArticle,
     doesNewsArticleIdExist, getAllArticlesWithTickerSentiments, getArticleTickerSentiments,
     getTickerBySymbol,
@@ -186,6 +187,80 @@ articleRouter.get("/:articleId/tickers", async (req: Request, res: Response) => 
         return res.status(500).json({ error: error?.message ?? "Failed to get ticker sentiments for article" });
     }
 });
+
+/**
+ * Bulk create articles and upsert sentiments
+ * Expected body: {
+ *   articles: NewNewsArticle[],
+ *   sentiments: {
+ *     articleId: string;
+ *     tickerSymbol: string;
+ *     tickerSentimentScore?: string | number | null;
+ *     tickerSentimentLabel?: string | null;
+ *     relevanceScore?: string | number | null;
+ *   }[]
+ * }
+ */
+articleRouter.post("/bulk", async (req: Request, res: Response) => {
+    const { articles, sentiments } = req.body;
+
+    if (!Array.isArray(articles) || !Array.isArray(sentiments)) {
+        return res.status(400).json({ error: "articles and sentiments must be arrays" });
+    }
+
+    if (articles.length === 0 && sentiments.length === 0) {
+        return res.status(400).json({ error: "At least one article or sentiment must be provided" });
+    }
+
+    // Basic validation and parsing for articles
+    const parsedArticles = [];
+    for (const article of articles) {
+        if (!article.url || !article.title || !article.summary || !article.publishedAt) {
+            return res.status(400).json({ error: "Each article must have url, title, summary, and publishedAt" });
+        }
+
+        // Parse publishedAt
+        let publishedAtDate: Date;
+        if (typeof article.publishedAt === "string") {
+            let parsed = getDateFromCompact(article.publishedAt);
+            if (parsed === null) {
+                parsed = new Date(article.publishedAt);
+            }
+            if (Number.isNaN(parsed.getTime())) {
+                return res.status(400).json({ error: "publishedAt is not a valid date" });
+            }
+            publishedAtDate = parsed;
+        } else {
+            return res.status(400).json({ error: "publishedAt must be a string" });
+        }
+
+        parsedArticles.push({
+            ...article,
+            publishedAt: publishedAtDate,
+        });
+    }
+
+    // Basic validation for sentiments
+    for (const sentiment of sentiments) {
+        if (!sentiment.articleId || !sentiment.tickerSymbol) {
+            return res.status(400).json({ error: "Each sentiment must have articleId and tickerSymbol" });
+        }
+    }
+
+    try {
+        if (parsedArticles.length > 0) {
+            await bulkCreateNewsArticles(parsedArticles);
+        }
+        if (sentiments.length > 0) {
+            await bulkUpsertArticleTickerSentiments(sentiments);
+        }
+        return res.status(201).json({ message: "Bulk operation completed successfully" });
+    } catch (error: any) {
+        console.log(error);
+        return res.status(500).json({ error: error?.message ?? "Failed to perform bulk operation" });
+    }
+});
+
 /**
  * Get articleId by URL
  * Expected body:
