@@ -65,7 +65,7 @@ authRouter.get("/callback", async (req: Request, res: Response) => {
             email: claims.email as string,
         })
 
-        await createSubscription(claims.email as string, []);
+        await createSubscription(claims.email as string, ['__NO_MATCH__']);
     }
 
     const sessionToken = randomBytes(32).toString('hex');
