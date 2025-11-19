@@ -32,7 +32,7 @@ export async function getTickersFromArticleId(articleId: string) {
         credentials: "include",
     });
 
-    console.log(`get tickers from article frotnend...`, response)
+    // console.log(`get tickers from article frotnend...`, response)
 
     if (!response.ok) throw new Error('failed to gett article tickers');
 

@@ -19,8 +19,14 @@ type NavbarProps = {
 export default function Navbar({ user, handleLogout }: NavbarProps) {
   console.log("user after refresh link:", user);
   return (
-    <Flex as="nav" p="1rem" alignItems="center" justifyContent="space-between" borderBottomWidth="2px">
-       <ChakraLink asChild>
+    <Flex
+      as="nav"
+      p="1rem"
+      alignItems="center"
+      justifyContent="space-between"
+      borderBottomWidth="2px"
+    >
+      <ChakraLink asChild>
         <ReactLink to="/">
           <Heading size="2xl">Wolves of Cloudstreet</Heading>
         </ReactLink>
@@ -33,9 +39,6 @@ export default function Navbar({ user, handleLogout }: NavbarProps) {
           </ChakraLink>
           <ChakraLink _hover={{ bg: "gray.100" }} asChild>
             <ReactLink to="/watchlist">Watchlist</ReactLink>
-          </ChakraLink>
-          <ChakraLink _hover={{ bg: "gray.100" }} asChild>
-            <ReactLink to="/analytics">Analytics</ReactLink>
           </ChakraLink>
         </Flex>
       ) : (

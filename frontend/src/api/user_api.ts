@@ -1,5 +1,4 @@
 import type { UserWatchlist } from "../../../api/src/db/schema";
-// import type { User } from "../../../api/src/db/schema";
 
 const USER_API_ROUTE = '/api/users';
 export interface WatchlistItem extends UserWatchlist {

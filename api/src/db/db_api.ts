@@ -1,5 +1,5 @@
 import { db } from "./client.js";
-import {eq, and, sql, inArray} from "drizzle-orm";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import crypto from "crypto";
 import {
     users,
@@ -19,7 +19,7 @@ import {
     type NewNewsArticleTicker,
     sessions,
 } from "./schema.js";
-import {getDateFromCompact} from "../util/utils.js";
+import { getDateFromCompact } from "../util/utils.js";
 import article from "../api/routes/article.js";
 
 /**
@@ -680,17 +680,17 @@ export async function preSeed() {
         { articleId: getArticleId("https://www.fool.com/coverage/etfs/2025/10/29/vti-offers-broader-market-exposure-than-vtv/"), tickerSymbol: "NVDA", relevanceScore: "0.109705", tickerSentimentScore: "0.03158", tickerSentimentLabel: "Neutral" },
         { articleId: getArticleId("https://www.fool.com/coverage/etfs/2025/10/29/vti-offers-broader-market-exposure-than-vtv/"), tickerSymbol: "AAPL", relevanceScore: "0.109705", tickerSentimentScore: "0.03158", tickerSentimentLabel: "Neutral" },
         { articleId: getArticleId("https://www.fool.com/coverage/etfs/2025/10/29/vti-offers-broader-market-exposure-than-vtv/"), tickerSymbol: "BRK-A", relevanceScore: "0.109705", tickerSentimentScore: "0.127025", tickerSentimentLabel: "Neutral" },
-        { articleId: getArticleId("https://www.fool.com/coverage/etfs/2025/10/29/vti-offers-broader-market-exposure-than-vtv/"), tickerSymbol: "XOM", relevanceScore: "0.109705", tickerSentimentScore: "0.240894", tickerSentimentLabel: "Somewhat-Bullish" },
-        { articleId: getArticleId("https://www.benzinga.com/analyst-stock-ratings/reiteration/25/10/48439252/apple-iphone-17-foldable-will-be-the-real-game-changer-analyst"), tickerSymbol: "GOOG", relevanceScore: "0.188193", tickerSentimentScore: "0.218426", tickerSentimentLabel: "Somewhat-Bullish" },
-        { articleId: getArticleId("https://www.benzinga.com/analyst-stock-ratings/reiteration/25/10/48439252/apple-iphone-17-foldable-will-be-the-real-game-changer-analyst"), tickerSymbol: "AAPL", relevanceScore: "0.366061", tickerSentimentScore: "0.394064", tickerSentimentLabel: "Bullish" },
-        { articleId: getArticleId("https://www.zacks.com/stock/news/2778057/netflix-plunges-12-post-q3-earnings-buy-sell-or-hold-the-stock"), tickerSymbol: "NFLX", relevanceScore: "0.405963", tickerSentimentScore: "0.333318", tickerSentimentLabel: "Somewhat-Bullish" },
-        { articleId: getArticleId("https://www.zacks.com/stock/news/2778057/netflix-plunges-12-post-q3-earnings-buy-sell-or-hold-the-stock"), tickerSymbol: "GOOG", relevanceScore: "0.030369", tickerSentimentScore: "0.158411", tickerSentimentLabel: "Somewhat-Bullish" },
+        { articleId: getArticleId("https://www.fool.com/coverage/etfs/2025/10/29/vti-offers-broader-market-exposure-than-vtv/"), tickerSymbol: "XOM", relevanceScore: "0.109705", tickerSentimentScore: "0.240894", tickerSentimentLabel: "Positive" },
+        { articleId: getArticleId("https://www.benzinga.com/analyst-stock-ratings/reiteration/25/10/48439252/apple-iphone-17-foldable-will-be-the-real-game-changer-analyst"), tickerSymbol: "GOOG", relevanceScore: "0.188193", tickerSentimentScore: "0.218426", tickerSentimentLabel: "Positive" },
+        { articleId: getArticleId("https://www.benzinga.com/analyst-stock-ratings/reiteration/25/10/48439252/apple-iphone-17-foldable-will-be-the-real-game-changer-analyst"), tickerSymbol: "AAPL", relevanceScore: "0.366061", tickerSentimentScore: "0.394064", tickerSentimentLabel: "Positive" },
+        { articleId: getArticleId("https://www.zacks.com/stock/news/2778057/netflix-plunges-12-post-q3-earnings-buy-sell-or-hold-the-stock"), tickerSymbol: "NFLX", relevanceScore: "0.405963", tickerSentimentScore: "0.333318", tickerSentimentLabel: "Positive" },
+        { articleId: getArticleId("https://www.zacks.com/stock/news/2778057/netflix-plunges-12-post-q3-earnings-buy-sell-or-hold-the-stock"), tickerSymbol: "GOOG", relevanceScore: "0.030369", tickerSentimentScore: "0.158411", tickerSentimentLabel: "Positive" },
         { articleId: getArticleId("https://www.zacks.com/stock/news/2778057/netflix-plunges-12-post-q3-earnings-buy-sell-or-hold-the-stock"), tickerSymbol: "AAPL", relevanceScore: "0.150969", tickerSentimentScore: "0.074297", tickerSentimentLabel: "Neutral" },
         { articleId: getArticleId("https://www.zacks.com/stock/news/2778057/netflix-plunges-12-post-q3-earnings-buy-sell-or-hold-the-stock"), tickerSymbol: "AMZN", relevanceScore: "0.150969", tickerSentimentScore: "0.074297", tickerSentimentLabel: "Neutral" },
         { articleId: getArticleId("https://www.fool.com/investing/2025/10/27/2-top-tech-stocks-to-buy-for-2026/"), tickerSymbol: "AMD", relevanceScore: "0.342093", tickerSentimentScore: "0.059633", tickerSentimentLabel: "Neutral" },
-        { articleId: getArticleId("https://www.fool.com/investing/2025/10/27/2-top-tech-stocks-to-buy-for-2026/"), tickerSymbol: "AAPL", relevanceScore: "0.624172", tickerSentimentScore: "0.670171", tickerSentimentLabel: "Bullish" },
+        { articleId: getArticleId("https://www.fool.com/investing/2025/10/27/2-top-tech-stocks-to-buy-for-2026/"), tickerSymbol: "AAPL", relevanceScore: "0.624172", tickerSentimentScore: "0.670171", tickerSentimentLabel: "Positive" },
         { articleId: getArticleId("https://www.benzinga.com/markets/tech/25/10/48425089/apple-maps-reportedly-plans-to-showing-ads-next-year-potential-consumer-backlash-or-a-one-up-on-goog"), tickerSymbol: "GOOG", relevanceScore: "0.259727", tickerSentimentScore: "-0.070728", tickerSentimentLabel: "Neutral" },
-        { articleId: getArticleId("https://www.benzinga.com/markets/tech/25/10/48425089/apple-maps-reportedly-plans-to-showing-ads-next-year-potential-consumer-backlash-or-a-one-up-on-goog"), tickerSymbol: "AAPL", relevanceScore: "0.815149", tickerSentimentScore: "0.444723", tickerSentimentLabel: "Bullish" }
+        { articleId: getArticleId("https://www.benzinga.com/markets/tech/25/10/48425089/apple-maps-reportedly-plans-to-showing-ads-next-year-potential-consumer-backlash-or-a-one-up-on-goog"), tickerSymbol: "AAPL", relevanceScore: "0.815149", tickerSentimentScore: "0.444723", tickerSentimentLabel: "Positive" }
     ];
     await bulkUpsertArticleTickerSentiments(sentiments);
 }
