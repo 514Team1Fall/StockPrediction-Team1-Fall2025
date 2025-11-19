@@ -8,14 +8,7 @@ import Login from "./pages/Login";
 import Watchlist from "./pages/Watchlist";
 import News from "./pages/News";
 import NewsArticle from "./pages/NewsArticle";
-import Analytics from "./pages/Analytics";
-import {
-  Box,
-  Flex,
-  Spinner,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Spinner, Text, VStack } from "@chakra-ui/react";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -27,17 +20,15 @@ function App() {
 
   // TODO: maybe call this every 5 minutes? just so it automatically logs us out when we're not active as default logout time in cognito is 3mins
   async function verifyLogin() {
-    try{
+    try {
       const isUser = await checkSession();
       console.log("user @verifyLogin():", isUser);
       setUser(isUser);
       setLoading(false);
-    }
-    catch (err){
-      console.error("user session issue: ", err)
+    } catch (err) {
+      console.error("user session issue: ", err);
       setUser(null);
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   }
@@ -49,7 +40,7 @@ function App() {
       setUser(null);
     } catch (err) {
       console.error("logout failure:", err);
-      setUser(null)
+      setUser(null);
     }
   }
 
@@ -74,7 +65,6 @@ function App() {
               <Route path="/news" element={<News />} />
               <Route path="/watchlist" element={<Watchlist user={user} />} />
               <Route path="/news/:articleId" element={<NewsArticle />} />
-              <Route path="/analytics" element={<Analytics />} />
             </Route>
             {/* route for nonlogged-in users */}
             <Route
