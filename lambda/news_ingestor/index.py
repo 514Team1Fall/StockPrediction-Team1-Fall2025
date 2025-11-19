@@ -61,16 +61,31 @@ def ingest_batch(api_key: str, all_articles: list, all_sentiments: list) -> None
             }
             all_articles.append(article)
 
-            # Use tickers from ticker_sentiment, strip prefixes, compute sentiments using overall
+            # Per-ticker sentiment: reuse overall text for each ticker (approx)
             sentiments = item.get('ticker_sentiment') or []
             for s in sentiments:
                 ticker = s.get("ticker", "").split(":")[-1]  # Strip prefix
                 if ticker:
+                    # Compute sentiment per ticker using the same text (or contextualize if possible)
+                    try:
+                        if text:
+                            res = comprehend.detect_sentiment(Text=text[:4800], LanguageCode='en')
+                            ticker_label = res.get("Sentiment")
+                            ticker_scores = res.get("SentimentScore", {})
+                            ticker_signed = float(ticker_scores.get("Positive", 0.0)) - float(ticker_scores.get("Negative", 0.0))
+                        else:
+                            ticker_label = None
+                            ticker_signed = None
+                    except Exception as te:
+                        print(f"ERROR ticker sentiment for {ticker}: {te}")
+                        ticker_label = None
+                        ticker_signed = None
+
                     sentiment = {
                         "articleId": article_id,
                         "tickerSymbol": ticker,
-                        "tickerSentimentScore": item.get("overallSentimentScore"),
-                        "tickerSentimentLabel": item.get("overallSentimentLabel"),
+                        "tickerSentimentScore": round(ticker_signed, 4) if ticker_signed is not None else None,
+                        "tickerSentimentLabel": ticker_label,
                         "relevanceScore": s.get("relevance_score"),
                     }
                     all_sentiments.append(sentiment)
