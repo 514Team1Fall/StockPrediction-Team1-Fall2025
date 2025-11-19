@@ -1,5 +1,5 @@
 import { db } from "./client.js";
-import {eq, and, sql, inArray} from "drizzle-orm";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import crypto from "crypto";
 import {
     users,
@@ -19,7 +19,7 @@ import {
     type NewNewsArticleTicker,
     sessions,
 } from "./schema.js";
-import {getDateFromCompact} from "../util/utils.js";
+import { getDateFromCompact } from "../util/utils.js";
 import article from "../api/routes/article.js";
 
 /**
