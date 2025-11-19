@@ -4,7 +4,8 @@ import {
     createNewsArticle,
     doesNewsArticleIdExist, getAllArticlesWithTickerSentiments, getArticleTickerSentiments,
     getTickerBySymbol,
-    upsertArticleTickerSentiment
+    upsertArticleTickerSentiment,
+    createTicker
 } from "../../db/db_api.js";
 import auth from "../../middleware/auth.js";
 import {getDateFromCompact} from "../../util/utils.js";
@@ -119,16 +120,35 @@ articleRouter.post("/", async (req: Request, res: Response) => {
  */
 articleRouter.post("/:articleId/tickers", async (req: Request, res: Response) => {
     const articleId = req.params.articleId;
-    const { tickerSymbol, tickerSentimentScore, tickerSentimentLabel, relevanceScore } = req.body;
+    const { tickerSymbol, tickerType, tickerSentimentScore, tickerSentimentLabel, relevanceScore } = req.body;
 
     if (typeof tickerSymbol !== "string" || tickerSymbol.trim().length === 0) {
         return res.status(400).json({ error: "Missing or invalid tickerSymbol" });
     }
 
-    const ticker = await getTickerBySymbol(tickerSymbol);
+    // Validate ticker symbol format
+    const normalizedSymbol = tickerSymbol.trim().toUpperCase();
+    if (normalizedSymbol.length === 0 || normalizedSymbol.length > 32) {
+        return res.status(400).json({ error: "Invalid tickerSymbol: length must be 1-32 characters" });
+    }
 
+    // Determine ticker type
+    const type = (tickerType === "crypto" ? "crypto" : "stock") as "stock" | "crypto";
+
+    // Check if ticker exists
+    let ticker = await getTickerBySymbol(normalizedSymbol);
+    
+    // If ticker exists but with different type, we need to handle it
     if (ticker === null) {
-        return res.status(400).json({ error: "Invalid tickerSymbol; ticker not found" });
+        try {
+            ticker = await createTicker({ symbol: normalizedSymbol, type });
+        } catch (error: any) {
+            // If creation fails, try to fetch again
+            ticker = await getTickerBySymbol(normalizedSymbol);
+            if (ticker === null) {
+                return res.status(500).json({ error: `Failed to create ticker: ${error?.message ?? "Unknown error"}` });
+            }
+        }
     }
 
     const tickerId = ticker.tickerId;
