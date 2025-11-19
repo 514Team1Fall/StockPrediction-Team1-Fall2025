@@ -120,14 +120,6 @@ export async function setUserNotifications(userId: string, enabled: boolean): Pr
     return false;
 }
 
-export async function setUserNotificationArn(userId: string, notificationArn: string | null): Promise<boolean> {
-    const result = await db.update(users).set({ notificationArn }).where(eq(users.userId, userId));
-    if (result) {
-        return true;
-    }
-    return false;
-}
-
 /**
  * Create a ticker (symbol + type). Returns the created record.
  */

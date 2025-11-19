@@ -1,4 +1,4 @@
-import { SetSubscriptionAttributesCommand, SNSClient, SubscribeCommand, UnsubscribeCommand, type SubscribeCommandOutput } from "@aws-sdk/client-sns";
+import { ListSubscriptionsByTopicCommand, SetSubscriptionAttributesCommand, SNSClient, SubscribeCommand, UnsubscribeCommand, type ListSubscriptionsByTopicCommandOutput, type SubscribeCommandOutput } from "@aws-sdk/client-sns";
 
 export const sns = new SNSClient({
     credentials: {
@@ -11,7 +11,7 @@ export const sns = new SNSClient({
 export async function createSubscription(
     email: string,
     tickers: string[]
-): Promise<string> {
+): Promise<void> {
     const filterPolicy = { ticker: tickers };
 
     const resp: SubscribeCommandOutput = await sns.send(
@@ -24,16 +24,51 @@ export async function createSubscription(
             },
         })
     );
+}
 
-    // Could be actual ARN or "PendingConfirmation"
-    return resp.SubscriptionArn!;
+
+export async function findSubscriptionArnByEmail(
+    email: string
+): Promise<string | null> {
+    let nextToken: string | undefined = undefined;
+
+    do {
+        const resp: ListSubscriptionsByTopicCommandOutput = await sns.send(
+            new ListSubscriptionsByTopicCommand({
+                TopicArn: process.env.SNS_TOPIC_ARN!,
+                NextToken: nextToken,
+            })
+        );
+
+        const sub = resp.Subscriptions?.find(
+            (s) =>
+                s.Protocol === "email" &&
+                s.Endpoint?.toLowerCase() === email.toLowerCase()
+        );
+
+        if (sub) {
+            // Could be real ARN or "PendingConfirmation"
+            return sub.SubscriptionArn ?? null;
+        }
+
+        nextToken = resp.NextToken;
+    } while (nextToken);
+
+    return null;
 }
 
 export async function updateSubscriptionFilterPolicy(
-    subscriptionArn: string,
+    email: string,
     tickers: string[]
 ): Promise<void> {
     const filterPolicy = { ticker: tickers };
+    const subscriptionArn = await findSubscriptionArnByEmail(email);
+
+    if (!subscriptionArn || subscriptionArn === "PendingConfirmation") {
+        throw new Error(
+            `Subscription for email ${email} not found or not confirmed.`
+        );
+    }
 
     await sns.send(
         new SetSubscriptionAttributesCommand({

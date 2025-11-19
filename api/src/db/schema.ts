@@ -23,7 +23,6 @@ export const users = mysqlTable(
     {
         userId: varchar("user_id", { length: 191 }).primaryKey(),
         email: varchar("email", { length: 254 }).notNull(),
-        notificationArn: varchar("notification_arn", { length: 512 }),
         notificationEnabled: boolean("notification_enabled").notNull().default(true),
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at"),
