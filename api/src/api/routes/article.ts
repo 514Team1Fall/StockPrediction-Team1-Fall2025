@@ -8,7 +8,8 @@ import {
     upsertArticleTickerSentiment
 } from "../../db/db_api.js";
 import auth from "../../middleware/auth.js";
-import {getDateFromCompact} from "../../util/utils.js";
+import { getDateFromCompact } from "../../util/utils.js";
+import { publishMessage } from "../../lib/sns.js";
 
 const articleRouter = express.Router();
 
@@ -159,6 +160,7 @@ articleRouter.post("/:articleId/tickers", async (req: Request, res: Response) =>
 
     try {
         const finalRow = await upsertArticleTickerSentiment(params);
+
         return res.status(200).json(finalRow);
     } catch (error: any) {
         return res.status(500).json({ error: error?.message ?? "Failed to upsert ticker sentiment" });
@@ -253,6 +255,16 @@ articleRouter.post("/bulk", async (req: Request, res: Response) => {
         }
         if (sentiments.length > 0) {
             await bulkUpsertArticleTickerSentiments(sentiments);
+
+            for (const sentiment of sentiments) {
+                if (sentiment.tickerSentimentScore > 0) {
+                    const article = parsedArticles.find(a => a.articleId === sentiment.articleId);
+                    if (article === undefined) {
+                        continue;
+                    }
+                    publishMessage(sentiment.tickerSymbol, "Negative sentiment alert", `The article titled "${article.title}" has a negative sentiment score of ${sentiment.tickerSentimentScore} for ticker ${sentiment.tickerSymbol}. URL: ${article.url}`);
+                }
+            }
         }
         return res.status(201).json({ message: "Bulk operation completed successfully" });
     } catch (error: any) {

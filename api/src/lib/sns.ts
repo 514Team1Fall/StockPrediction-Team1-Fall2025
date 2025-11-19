@@ -1,4 +1,4 @@
-import { ListSubscriptionsByTopicCommand, SetSubscriptionAttributesCommand, SNSClient, SubscribeCommand, UnsubscribeCommand, type ListSubscriptionsByTopicCommandOutput, type SubscribeCommandOutput } from "@aws-sdk/client-sns";
+import { ListSubscriptionsByTopicCommand, PublishCommand, SetSubscriptionAttributesCommand, SNSClient, SubscribeCommand, UnsubscribeCommand, type ListSubscriptionsByTopicCommandOutput, type PublishCommandOutput, type SubscribeCommandOutput } from "@aws-sdk/client-sns";
 
 export const sns = new SNSClient({
     credentials: {
@@ -84,4 +84,25 @@ export async function updateSubscriptionFilterPolicy(
 
 export async function unsubscribeAll(email: string): Promise<void> {
     await updateSubscriptionFilterPolicy(email, ['__NO_MATCH__']);
+}
+
+
+export async function publishMessage(
+    ticker: string,
+    subject: string,
+    message: string
+): Promise<PublishCommandOutput> {
+    return await sns.send(
+        new PublishCommand({
+            TopicArn: process.env.SNS_TOPIC_ARN!,
+            Subject: subject,
+            Message: message,
+            MessageAttributes: {
+                ticker: {
+                    DataType: "String",
+                    StringValue: ticker,
+                },
+            },
+        })
+    );
 }
