@@ -6,9 +6,12 @@ import {
     getUserById,
     getUserWatchlistTickers,
     setUserNotifications, createUser, getTickerBySymbol, getTickersByType,
+    setUserNotificationArn,
 } from "../../db/db_api.js";
 import type { NewTicker, NewUser } from "../../db/schema.js";
 import auth from "../../middleware/auth.js";
+import { createSubscription, sns, unsubscribeAll, updateSubscriptionFilterPolicy } from "../../lib/sns.js"
+import { ListSubscriptionsByTopicCommand, SetSubscriptionAttributesCommand, SubscribeCommand, UnsubscribeCommand, type ListSubscriptionsByTopicCommandOutput, type SetSubscriptionAttributesCommandOutput, type SubscribeCommandOutput } from "@aws-sdk/client-sns";
 
 const userRouter = express.Router();
 
@@ -36,6 +39,20 @@ userRouter.patch("/notifications", auth, async (req: Request, res: Response) => 
         const ok = await (async () => {
             return await setUserNotifications(userId, enabled);
         })();
+
+        // Update or create subscription
+        //
+        if (!enabled && user.notificationArn) {
+            await unsubscribeAll(user.notificationArn);
+            // clear notificationArn from user
+            await setUserNotificationArn(userId, null);
+        } else if (enabled && !user.notificationArn) {
+            const watchlistTickers = await getUserWatchlistTickers(userId);
+            const tickerSymbols = watchlistTickers.map(t => t.symbol);
+            const subArn = await createSubscription(user.email, tickerSymbols);
+            // update user with notificationArn
+            await setUserNotificationArn(userId, subArn);
+        }
 
         return res.json({ success: !!ok });
     } catch (error: any) {
@@ -84,6 +101,18 @@ userRouter.post("/watchlist", auth, async (req: Request, res: Response) => {
         };
 
         try {
+            if (user.notificationEnabled && !user.notificationArn) {
+                const subArn = await createSubscription(user.email, [normalizedSymbol]);
+                // update user with notificationArn
+                await setUserNotificationArn(userId, subArn);
+            } else if (user.notificationEnabled && user.notificationArn) {
+                // update existing subscription to add new ticker filter
+                const watchlistTickers = await getUserWatchlistTickers(userId);
+                const tickerSymbols = watchlistTickers.map(t => t.symbol);
+                tickerSymbols.push(normalizedSymbol);
+                const subArn = user.notificationArn;
+                await updateSubscriptionFilterPolicy(subArn, tickerSymbols);
+            }
             const row = await addUserWatchlist(toInsert);
             return res.status(201).json(row);
         } catch (err: any) {
@@ -146,6 +175,27 @@ userRouter.patch("/watchlist/:symbol/notifications", auth, async (req: Request, 
             // ignore remove errors and proceed to add
         }
 
+        if (user.notificationEnabled && enabled && !user.notificationArn) {
+            const subArn = await createSubscription(user.email, [normalizedSymbol]);
+            // update user with notificationArn
+            await setUserNotificationArn(userId, subArn);
+        } else if (user.notificationEnabled && enabled && user.notificationArn) {
+            // update existing subscription to add new ticker filter
+            const watchlistTickers = await getUserWatchlistTickers(userId);
+            const tickerSymbols = watchlistTickers.map(t => t.symbol);
+            if (!tickerSymbols.includes(normalizedSymbol)) {
+                tickerSymbols.push(normalizedSymbol);
+                const subArn = user.notificationArn;
+                await updateSubscriptionFilterPolicy(subArn, tickerSymbols);
+            }
+        } else if (user.notificationEnabled && !enabled && user.notificationArn) {
+            // removing notification for this ticker, need to update filter policy
+            const watchlistTickers = await getUserWatchlistTickers(userId);
+            const tickerSymbols = watchlistTickers.map(t => t.symbol).filter(s => s !== normalizedSymbol);
+            const subArn = user.notificationArn;
+            await updateSubscriptionFilterPolicy(subArn, tickerSymbols);
+        }
+
         try {
             const row = await addUserWatchlist({ userId, tickerId, notificationEnabled: enabled });
             return res.json(row);
@@ -187,6 +237,14 @@ userRouter.delete("/watchlist/:symbol", auth, async (req: Request, res: Response
         const tickerId = ticker ? ticker.tickerId : null;
         if (tickerId === null) {
             return res.status(404).json({ error: "Ticker not found" });
+        }
+
+        if (user.notificationEnabled && user.notificationArn) {
+            // update existing subscription to remove ticker filter
+            const watchlistTickers = await getUserWatchlistTickers(userId);
+            const tickerSymbols = watchlistTickers.map(t => t.symbol).filter(s => s !== symbol);
+            const subArn = user.notificationArn;
+            await updateSubscriptionFilterPolicy(subArn, tickerSymbols);
         }
 
         const removed = await removeUserWatchlist(userId, tickerId);

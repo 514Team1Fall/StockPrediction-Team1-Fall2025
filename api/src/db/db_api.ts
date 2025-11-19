@@ -1,5 +1,5 @@
 import { db } from "./client.js";
-import {eq, and, sql, inArray} from "drizzle-orm";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import crypto from "crypto";
 import {
     users,
@@ -19,7 +19,7 @@ import {
     type NewNewsArticleTicker,
     sessions,
 } from "./schema.js";
-import {getDateFromCompact} from "../util/utils.js";
+import { getDateFromCompact } from "../util/utils.js";
 import article from "../api/routes/article.js";
 
 /**
@@ -117,6 +117,14 @@ export async function setUserNotifications(userId: string, enabled: boolean): Pr
         return true;
     }
 
+    return false;
+}
+
+export async function setUserNotificationArn(userId: string, notificationArn: string | null): Promise<boolean> {
+    const result = await db.update(users).set({ notificationArn }).where(eq(users.userId, userId));
+    if (result) {
+        return true;
+    }
     return false;
 }
 

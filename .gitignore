@@ -5,3 +5,4 @@ drizzle/
 .env
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
+secrets.tfvars
