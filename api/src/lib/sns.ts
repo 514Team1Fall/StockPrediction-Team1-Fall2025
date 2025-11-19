@@ -61,6 +61,9 @@ export async function updateSubscriptionFilterPolicy(
     email: string,
     tickers: string[]
 ): Promise<void> {
+    if (tickers.length === 0) {
+        tickers.push('__NO_MATCH__');
+    }
     const filterPolicy = { ticker: tickers };
     const subscriptionArn = await findSubscriptionArnByEmail(email);
 
