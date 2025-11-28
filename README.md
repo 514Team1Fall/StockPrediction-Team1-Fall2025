@@ -89,7 +89,8 @@ View of ticker added to watchlist:
 ## How to test negative sentiments (Dev / Test Purpose):
 1. Log in and add a ticker to your watchlist, and ensure notifications are enabled for that ticker.
 2. Use your choice of Postman-like software to send a new article with negative function to the API.
-2. Make a POST request to https://{deployedUrl}.cloudfront.net/api/articles/bulk with the following body (ensure Content-Type is application/json):
+3. Make a POST request to https://{deployedUrl}.cloudfront.net/api/articles/bulk with the following body (ensure Content-Type is application/json):
+4. If confused by {deployedUrl} copy paste your deployed URL from terraform_apply workflow and add /api/articles/bulk at the end.
 ```json
 // Example using MSFT (Microsoft) as the ticker
 {
