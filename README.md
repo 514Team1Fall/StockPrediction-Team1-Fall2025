@@ -44,8 +44,11 @@ To begin, make sure you go update your GitHub repository settings to include the
 - This lambda will run every 5 minutes (for demo and testing purposes) to update the information. When the project is deployed, there is some initial filler data that you can interact with while you wait, but know that it may take some time for new articles to populate.
 
 ## Initial Sign Up
-0. Wait for the 504 Error to disappear when clicking the login / sign-up (if app was just deployed)
-1. Sign up for an account
+1. Navigate to the deployed URL of the application (app_url from terraform_apply workflow).
+![app_url](readme_images/app_url.png)
+1. Click on Log in / Sign Up 
+2. Wait for the 504 Error to disappear when clicking the login / sign-up (if app was just deployed)
+3. Sign up for an account
 2. Verify your account through email 
 3. **Don't Skip** Accept the subscription agreement for emails from the app. It may show up in your spam folder. The email will look like this:
   ![image](readme_images/SNSConfirmation.png)
