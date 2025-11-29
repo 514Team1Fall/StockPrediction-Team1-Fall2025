@@ -1,3 +1,14 @@
+# Things Needed to Run the Project
+- AWS Account
+  - Key Pair Name for Security Group Access from Generated Infrastructure
+    - You can create a key pair in the AWS EC2 Dashboard under Network & Security > Key Pairs
+  - AWS Access Key ID and Secret Access Key
+    - These can be created in the AWS IAM Dashboard under Users > Security Credentials > Create Access Key
+- S3 Bucket for Terraform Remote State
+    - Create an S3 bucket in the AWS S3 Dashboard to store the Terraform state file
+- Alpha Vantage API Key
+  - This can be requested from Alpha Vantage [here](https://www.alphavantage.co/support/#api-key)
+
 # How to run the Project from GitHub Actions
 To begin, make sure you go update your GitHub repository settings to include the necessary secrets for authentication and configuration.
 1. **Set Up GitHub Secrets**:
