@@ -34,7 +34,7 @@ To begin, make sure you go update your GitHub repository settings to include the
     - Update the `bucket` attribute to specify the name of your S3 bucket that will be used for storing the Terraform state.
     - Ensure that the S3 bucket exists in your AWS account and has proper permissions set up to allow Terraform to access it.
 4. **Deploying The Project**:
-    - Once the secrets and variables are set up, navigate to the `Actions` tab in your GitHub repository.
+    - Once the secrets and variables are set up, navigate to the `Actions` tab in the GitHub repository.
     - Select the workflow `Stock Prediction Deploy Script`.
     - Click Run workflow.
     - Select terraform_apply
