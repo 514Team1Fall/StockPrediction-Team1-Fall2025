@@ -46,7 +46,7 @@ export default function News() {
       }
     }
     loadArticles();
-  }, []);
+  }, [watchlistOnly]);
 
   const sortedArticles = useMemo(() => {
     return [...articles].sort((a, b) => {
@@ -88,15 +88,14 @@ export default function News() {
 
   return (
     <Container paddingY={8}>
-      <Heading marginBottom={6}>News Articles</Heading>
         <Flex justifyContent="space-between" alignItems="center" marginBottom={6}>
-            <Heading>News Articles</Heading>
+            <Heading marginBottom={6}>News Articles</Heading>
             <Button
                 onClick={() => setWatchlistOnly((prev) => !prev)}
                 colorPalette={watchlistOnly ? "blue" : "gray"}
                 variant="solid"
             >
-                {watchlistOnly ? "Show All" : "Watchlist Only"}
+                {watchlistOnly ? "Watchlist Only" : "All Articles"}
             </Button>
         </Flex>
       <Box boxShadow="sm">
