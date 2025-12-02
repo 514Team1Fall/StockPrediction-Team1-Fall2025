@@ -11,10 +11,18 @@ export interface NewsArticleTickers extends NewsArticle { //news
 // articleId, url, title, summary,publishedat, {tickers: {number: articleid, tickerid, tickersentimentscore, label, releavence, symbol}}
 /**
  * Get all articles with their ticker sentiments
+ * @param watchlistOnly - Whether to fetch articles only for tickers in the user's watchlist
  * @returns 
  */
-export async function getNewsArticles(): Promise<NewsArticleTickers[]> {
-    const response = await fetch(`${ARTICLE_API_ROUTE}/`, {
+export async function getNewsArticles(watchlistOnly: boolean): Promise<NewsArticleTickers[]> {
+
+    var route = `${ARTICLE_API_ROUTE}`;
+
+    if (watchlistOnly) {
+        route = route + "/byWatchlist";
+    }
+
+    const response = await fetch(route, {
         credentials: "include",
     });
 

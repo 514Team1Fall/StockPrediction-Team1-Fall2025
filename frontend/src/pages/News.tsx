@@ -27,6 +27,7 @@ import Loading from "./Loading";
 export default function News() {
   const [articles, setArticles] = useState<NewsArticleTickers[]>([]);
   const [isloading, setLoading] = useState<boolean>(true);
+  const [watchlistOnly, setWatchlistOnly] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc"); // sortby newest by default
   const [page, setPage] = useState(1);
   const pageSize = 8;
@@ -35,7 +36,7 @@ export default function News() {
     async function loadArticles() {
       try {
         setLoading(true); // make website preload data before loading page
-        const data = await getNewsArticles();
+        const data = await getNewsArticles(watchlistOnly);
         // console.log("articles loading...", data);
         setArticles(data);
       } catch (err) {
@@ -88,7 +89,16 @@ export default function News() {
   return (
     <Container paddingY={8}>
       <Heading marginBottom={6}>News Articles</Heading>
-
+        <Flex justifyContent="space-between" alignItems="center" marginBottom={6}>
+            <Heading>News Articles</Heading>
+            <Button
+                onClick={() => setWatchlistOnly((prev) => !prev)}
+                colorPalette={watchlistOnly ? "blue" : "gray"}
+                variant="solid"
+            >
+                {watchlistOnly ? "Show All" : "Watchlist Only"}
+            </Button>
+        </Flex>
       <Box boxShadow="sm">
         <Table.Root>
           <Table.Header>
