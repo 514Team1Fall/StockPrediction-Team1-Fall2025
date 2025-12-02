@@ -228,6 +228,10 @@ export async function getUserWatchlistTickers(userId: string): Promise<Ticker[]>
     return rows as Ticker[];
 }
 
+/**
+ * Get all articles that are relevant to a user's watchlist.
+ * @param userId userId of the user
+ */
 export async function getArticlesForWatchlist(userId: string): Promise<any[]> {
     // Get tickerIds from the user's watchlist
     const userTickerRows = await db
@@ -277,7 +281,6 @@ export async function getArticlesForWatchlist(userId: string): Promise<any[]> {
 
     return results;
 }
-
 
 /**
  * Get ticker ID by symbol
