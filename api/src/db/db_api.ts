@@ -228,6 +228,57 @@ export async function getUserWatchlistTickers(userId: string): Promise<Ticker[]>
     return rows as Ticker[];
 }
 
+export async function getArticlesForWatchlist(userId: string): Promise<any[]> {
+    // Get tickerIds from the user's watchlist
+    const userTickerRows = await db
+        .select({ tickerId: userWatchlist.tickerId })
+        .from(userWatchlist)
+        .where(eq(userWatchlist.userId, userId));
+
+    if (userTickerRows.length === 0) {
+        return [];
+    }
+
+    const tickerIds = userTickerRows.map(r => r.tickerId);
+
+    // Query articles that are linked to any of the user's tickers
+    const rows = await db
+        .select({
+            articleId: newsArticles.articleId,
+            url: newsArticles.url,
+            title: newsArticles.title,
+            summary: newsArticles.summary,
+            publishedAt: newsArticles.publishedAt,
+            overallSentimentScore: newsArticles.overallSentimentScore,
+            overallSentimentLabel: newsArticles.overallSentimentLabel,
+        })
+        .from(newsArticles)
+        .innerJoin(newsArticleTickers, eq(newsArticles.articleId, newsArticleTickers.articleId))
+        .where(inArray(newsArticleTickers.tickerId, tickerIds))
+        .orderBy(newsArticles.publishedAt);
+
+    // Dedupe articles (join can produce duplicates)
+    const map: Record<string, any> = {};
+    for (const r of rows) {
+        map[r.articleId] = r;
+    }
+    const articlesRaw = Object.values(map);
+
+    // Attach ticker sentiments for each article
+    const results = await Promise.all(
+        articlesRaw.map(async (a: any) => {
+            const tickers = await getArticleTickerSentiments(a.articleId);
+            return {
+                ...a,
+                tickers,
+            };
+        })
+    );
+
+    return results;
+}
+
+
 /**
  * Get ticker ID by symbol
  * @param symbol The ticker symbol (i.e. AAPL or BTC)

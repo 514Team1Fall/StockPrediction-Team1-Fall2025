@@ -18,6 +18,19 @@ articleRouter.get("/", auth, async (req, res) => {
     return res.json(articles);
 })
 
+articleRouter.get("/byWatchlist",auth, async (req, res) => {
+    const userId = req.user?.userId;
+
+    if (req.user === undefined || userId === undefined) return res.status(401).json({"error": "Unauthorized access. Please login first."});
+
+    if (typeof userId !== "string" || userId.trim() === "") {
+        return res.status(400).json({ error: "Invalid userId" });
+    }
+
+    const articlesForWatchlist = await getAllArticlesWithTickerSentiments(userId);
+    return res.json(articlesForWatchlist);
+})
+
 articleRouter.get("/findSentiments/:tickerSymbol", async (req, res) => {
     const symbol = req.params.tickerSymbol;
 
