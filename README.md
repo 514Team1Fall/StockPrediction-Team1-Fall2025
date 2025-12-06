@@ -76,7 +76,7 @@ To begin, make sure you go update your GitHub repository settings to include the
 Path A (Viewing Insights from News Page):
 1. Log in to your account
 2. Navigate to the News Page
-3. Click "View Insights" on any article that lists tickers relevant to the article (Some articles can have any tickers listed).
+3. Click "View Insights" on any article that lists tickers relevant to the article (Some articles have NO tickers listed).
 4. Once within that menu you will see a list of tickers that are relevant to the article, along with the summary and sentiment of the tickers within the article.
 5. You can click on the star icon next to any ticker to add it to your watchlist, the star will turn yellow to indicate it has been added.
 ![watchlist view](readme_images/WatchlistPathA.png)
@@ -100,7 +100,7 @@ View of ticker added to watchlist:
 ## How to test negative sentiments (Dev / Test Purpose):
 1. Log in and add a ticker to your watchlist, and ensure notifications are enabled for that ticker.
 2. Use your choice of Postman-like software to send a new article with negative function to the API.
-3. Make a POST request to https://{deployedUrl}.cloudfront.net/api/articles/bulk with the following body (ensure Content-Type is application/json):
+3. Make a POST request to https://{deployedUrl}/api/articles/bulk with the following body (ensure Content-Type is application/json):
 4. If confused by {deployedUrl} copy paste your deployed URL from terraform_apply workflow and add /api/articles/bulk at the end.
 ```json
 // Example using MSFT (Microsoft) as the ticker
