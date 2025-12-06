@@ -57,14 +57,14 @@ To begin, make sure you go update your GitHub repository settings to include the
 ## Initial Sign Up
 1. Navigate to the deployed URL of the application (app_url from terraform_apply workflow).
 ![app_url](readme_images/app_url.png)
-1. Click on Log in / Sign Up 
-2. Wait for the 504 Error to disappear when clicking the login / sign-up (if app was just deployed)
-3. Sign up for an account
-2. Verify your account through email 
-3. **Don't Skip** Accept the subscription agreement for emails from the app. It may show up in your spam folder. The email will look like this:
+2. Click on Log in / Sign Up 
+3. Wait for the 504 Error to disappear when clicking the login / sign-up (if app was just deployed)
+4. Sign up for an account
+5. Verify your account through email 
+6. **Don't Skip** Accept the subscription agreement for emails from the app. It may show up in your spam folder. The email will look like this:
   ![image](readme_images/SNSConfirmation.png)
-4. Once you have verified your account and confirm the email subscription, you can log in and start using the app!
-5. If you skipped step 3, you will not be able to add items to your watchlist.
+7. Once you have verified your account and confirm the email subscription, you can log in and start using the app!
+8. If you skipped step 6, you will not be able to add items to your watchlist.
 
 ## Viewing News Articles
 1. Log in to your account
